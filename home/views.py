@@ -1,5 +1,3 @@
-from django.http import HttpResponse
-from django.template import loader
 from django.shortcuts import render
 
 
@@ -8,13 +6,11 @@ def index(request):
 
 
 def about(request):
-    template = loader.get_template("home/about.html")
-    return HttpResponse(template.render())
+    return render(request, "home/about.html")
 
 
 def services(request):
-    template = loader.get_template("home/services.html")
-    return HttpResponse(template.render())
+    return render(request, "home/services.html")
 
 
 def contact(request):

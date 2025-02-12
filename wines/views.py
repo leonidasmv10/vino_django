@@ -1,15 +1,13 @@
-from django.http import HttpResponse
-from django.template import loader
+from django.shortcuts import render
 
 
 def store(request):
-    template = loader.get_template("wines/store.html")
-    return HttpResponse(template.render())
+    return render(request, "wines/store.html")
+
 
 def collection(request):
-    template = loader.get_template("wines/collection.html")
-    return HttpResponse(template.render())
+    return render(request, "wines/collection.html")
+
 
 def cata(request):
-    template = loader.get_template("wines/cata.html")
-    return HttpResponse(template.render())
+    return render(request, "wines/cata.html")

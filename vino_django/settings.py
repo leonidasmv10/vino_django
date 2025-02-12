@@ -65,6 +65,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "users.context_processors.user_profile",
             ],
         },
     },
@@ -127,3 +128,13 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGOUT_REDIRECT_URL = "/"
+
+
+# settings.py
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # Usa la base de datos para almacenar sesiones
+SESSION_COOKIE_AGE = 3600  # La cookie de sesión dura 1 hora (en segundos)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = (
+    False  # No expirar la sesión cuando se cierra el navegador
+)

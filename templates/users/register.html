@@ -9,20 +9,34 @@
     <div class="container d-flex justify-content-center">
         <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%; border-radius: 12px;">
             <h2 class="text-center mb-3">Registro</h2>
-            <form action="{% url 'register' %}" method="POST">
+            <form method="POST">
                 {% csrf_token %}
+
                 <div class="mb-3">
                     <label for="username" class="form-label">Nombre de usuario</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <input type="text" class="form-control" id="username" name="username" required
+                        value="{{ form.username.value }}">
+                    {% if form.username.errors %}
+                    <div class="alert alert-danger mt-2">
+                        {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
+
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" id="password" name="password" required>
+                    {% if form.password.errors %}
+                    <div class="alert alert-danger mt-2">
+                        {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
-                    <label class="form-check-label" for="is_admin">¿Es administrador?</label>
-                </div>
+
                 <button type="submit" class="btn btn-success w-100">Registrar</button>
             </form>
             <hr>
