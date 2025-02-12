@@ -138,3 +138,8 @@ SESSION_COOKIE_AGE = 3600  # La cookie de sesión dura 1 hora (en segundos)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = (
     False  # No expirar la sesión cuando se cierra el navegador
 )
+
+import os
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

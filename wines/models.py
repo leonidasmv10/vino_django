@@ -6,6 +6,9 @@ class Vino(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
+    imagen = models.ImageField(
+        upload_to="vinos/", default="ruta/a/una/imagen/predeterminada.jpg"
+    )
 
     # Variables de puntuación
     cuerpo = models.IntegerField(

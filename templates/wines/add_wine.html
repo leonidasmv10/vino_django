@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Nuevo Vino - Vinoteca Premium{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>🍷 Crear Nuevo Vino</h2>
+    <form method="POST" action="{% url 'add_wine' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nombre">Nombre del Vino:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+        </div>
+    
+        <div class="form-group">
+            <label for="precio">Precio:</label>
+            <input type="number" class="form-control" id="precio" name="precio" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="imagen">Imagen del Vino:</label>
+            <input type="file" class="form-control-file" id="imagen" name="imagen" accept="image/*" required>
+        </div>
+    
+        <button type="submit" class="btn btn-success mt-3">Guardar Vino</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("vinoForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Generar valores aleatorios para los atributos
+        const cuerpo = Math.floor(Math.random() * 101);
+        const aroma = Math.floor(Math.random() * 101);
+        const sabor = Math.floor(Math.random() * 101);
+        const taninos = Math.floor(Math.random() * 101);
+        const acidez = Math.floor(Math.random() * 101);
+        const dulzura = Math.floor(Math.random() * 101);
+        const envejecimiento = Math.floor(Math.random() * 20) + " años";
+        const maridajeOpciones = ["Carnes rojas", "Quesos curados", "Pescados", "Ensaladas", "Postres"];
+        const maridaje = maridajeOpciones[Math.floor(Math.random() * maridajeOpciones.length)];
+
+        // Crear un objeto con los datos
+        const formData = {
+            nombre: document.getElementById("nombre").value,
+            descripcion: document.getElementById("descripcion").value,
+            precio: document.getElementById("precio").value,
+            cuerpo: cuerpo,
+            aroma: aroma,
+            sabor: sabor,
+            taninos: taninos,
+            acidez: acidez,
+            dulzura: dulzura,
+            envejecimiento: envejecimiento,
+            maridaje: maridaje
+        };
+
+        // Enviar los datos al backend
+        fetch("{% url 'add_wine' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("Vino creado exitosamente: " + data.nombre);
+                window.location.href = "{% url 'collection' %}";
+            })
+            .catch(error => console.error("Error al guardar el vino:", error));
+    });
+</script>
+
+{% endblock %}
