@@ -1,115 +1,108 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Competencia de Vinos - Vinoteca Premium{% endblock %}
+{% block title %}Card-Jitsu de Vinos 🍷🎴{% endblock %}
 
 {% block content %}
-<section id="wine-competition" class="container my-5 text-center">
-    <h2>🍷 Competencia de Vinos</h2>
+<div class="container text-center my-5">
+    <h2>🍷 Card-Jitsu de Vinos 🎴</h2>
+    <p>Selecciona una carta y enfréntate al oponente en una categoría aleatoria.</p>
 
-    <div class="row">
-        <!-- Vino 1 -->
-        <div class="col-6">
-            <div class="wine-card" id="vino1">
-                <h4>Vino 1</h4>
-                <ul id="vino1-stats">
-                    <li><strong>Cuerpo:</strong> <span id="vino1-cuerpo">0</span></li>
-                    <li><strong>Aroma:</strong> <span id="vino1-aroma">0</span></li>
-                    <li><strong>Sabor:</strong> <span id="vino1-sabor">0</span></li>
-                    <li><strong>Taninos:</strong> <span id="vino1-taninos">0</span></li>
-                    <li><strong>Acidez:</strong> <span id="vino1-acidez">0</span></li>
-                    <li><strong>Dulzura:</strong> <span id="vino1-dulzura">0</span></li>
-                    <li><strong>Envejecimiento:</strong> <span id="vino1-envejecimiento">0</span></li>
-                </ul>
-                <p><strong>Maridaje Ideal:</strong> Pasta, Quesos, Carnes Rojas</p>
-            </div>
-        </div>
-
-        <!-- Vino 2 -->
-        <div class="col-6">
-            <div class="wine-card" id="vino2">
-                <h4>Vino 2</h4>
-                <ul id="vino2-stats">
-                    <li><strong>Cuerpo:</strong> <span id="vino2-cuerpo">0</span></li>
-                    <li><strong>Aroma:</strong> <span id="vino2-aroma">0</span></li>
-                    <li><strong>Sabor:</strong> <span id="vino2-sabor">0</span></li>
-                    <li><strong>Taninos:</strong> <span id="vino2-taninos">0</span></li>
-                    <li><strong>Acidez:</strong> <span id="vino2-acidez">0</span></li>
-                    <li><strong>Dulzura:</strong> <span id="vino2-dulzura">0</span></li>
-                    <li><strong>Envejecimiento:</strong> <span id="vino2-envejecimiento">0</span></li>
-                </ul>
-                <p><strong>Maridaje Ideal:</strong> Pescados, Mariscos, Ensaladas</p>
-            </div>
-        </div>
+    <!-- Cartas del Jugador -->
+    <div class="row justify-content-center my-4" id="player-cards">
+        <!-- Se generarán dinámicamente -->
     </div>
 
-    <button class="btn btn-primary" onclick="iniciarCompetencia()">Iniciar Competencia</button>
+    <button id="fight-btn" class="btn btn-primary mt-3" disabled>Iniciar Ronda</button>
 
-    <div class="result" id="result"></div>
-</section>
+    <div class="row justify-content-center my-4" id="battle-result">
+        <!-- Resultado de la batalla -->
+    </div>
+</div>
 
 <script>
-    // Función para generar un número aleatorio entre 1 y 100
-    function generarPuntaje() {
-        return Math.floor(Math.random() * 100) + 1;
+    const wines = [
+        { name: "Vino Tinto", cuerpo: 80, aroma: 70, sabor: 75, img: "{% static 'images/vino.webp' %}" },
+        { name: "Vino Blanco", cuerpo: 60, aroma: 80, sabor: 70, img: "{% static 'images/vino.webp' %}" },
+        { name: "Vino Rosado", cuerpo: 50, aroma: 60, sabor: 65, img: "{% static 'images/vino.webp' %}" }
+    ];
+
+    let selectedCard = null;
+    const categories = ["cuerpo", "aroma", "sabor"];
+
+    function renderCards() {
+        const playerCardsContainer = document.getElementById("player-cards");
+        playerCardsContainer.innerHTML = "";
+
+        wines.forEach((wine, index) => {
+            const card = document.createElement("div");
+            card.className = "col-md-3 card shadow p-2 mx-2 wine-card";
+            card.innerHTML = `
+                <img src="${wine.img}" class="card-img-top" alt="${wine.name}" style="height: 150px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">${wine.name}</h5>
+                    <p>⚔️ Cuerpo: ${wine.cuerpo}</p>
+                    <p>🌿 Aroma: ${wine.aroma}</p>
+                    <p>🍷 Sabor: ${wine.sabor}</p>
+                </div>
+            `;
+            card.onclick = () => selectCard(index);
+            playerCardsContainer.appendChild(card);
+        });
     }
 
-    // Función que inicia la competencia
-    function iniciarCompetencia() {
-        // Generar puntajes aleatorios para Vino 1
-        const vino1 = {
-            cuerpo: generarPuntaje(),
-            aroma: generarPuntaje(),
-            sabor: generarPuntaje(),
-            taninos: generarPuntaje(),
-            acidez: generarPuntaje(),
-            dulzura: generarPuntaje(),
-            envejecimiento: generarPuntaje(),
-        };
+    function selectCard(index) {
+        selectedCard = wines[index];
+        document.querySelectorAll(".wine-card").forEach(card => card.classList.remove("selected"));
+        document.querySelectorAll(".wine-card")[index].classList.add("selected");
+        document.getElementById("fight-btn").disabled = false;
+    }
 
-        // Generar puntajes aleatorios para Vino 2
-        const vino2 = {
-            cuerpo: generarPuntaje(),
-            aroma: generarPuntaje(),
-            sabor: generarPuntaje(),
-            taninos: generarPuntaje(),
-            acidez: generarPuntaje(),
-            dulzura: generarPuntaje(),
-            envejecimiento: generarPuntaje(),
-        };
+    function fight() {
+        if (!selectedCard) return;
 
-        // Mostrar puntajes en la interfaz
-        document.getElementById('vino1-cuerpo').textContent = vino1.cuerpo;
-        document.getElementById('vino1-aroma').textContent = vino1.aroma;
-        document.getElementById('vino1-sabor').textContent = vino1.sabor;
-        document.getElementById('vino1-taninos').textContent = vino1.taninos;
-        document.getElementById('vino1-acidez').textContent = vino1.acidez;
-        document.getElementById('vino1-dulzura').textContent = vino1.dulzura;
-        document.getElementById('vino1-envejecimiento').textContent = vino1.envejecimiento;
-
-        document.getElementById('vino2-cuerpo').textContent = vino2.cuerpo;
-        document.getElementById('vino2-aroma').textContent = vino2.aroma;
-        document.getElementById('vino2-sabor').textContent = vino2.sabor;
-        document.getElementById('vino2-taninos').textContent = vino2.taninos;
-        document.getElementById('vino2-acidez').textContent = vino2.acidez;
-        document.getElementById('vino2-dulzura').textContent = vino2.dulzura;
-        document.getElementById('vino2-envejecimiento').textContent = vino2.envejecimiento;
-
-        // Calcular puntaje total de cada vino
-        const puntajeVino1 = Object.values(vino1).reduce((acc, val) => acc + val, 0);
-        const puntajeVino2 = Object.values(vino2).reduce((acc, val) => acc + val, 0);
-
-        // Determinar el ganador
-        let resultado = '';
-        if (puntajeVino1 > puntajeVino2) {
-            resultado = `¡Vino 1 gana con un puntaje de ${puntajeVino1} frente a ${puntajeVino2}!`;
-        } else if (puntajeVino2 > puntajeVino1) {
-            resultado = `¡Vino 2 gana con un puntaje de ${puntajeVino2} frente a ${puntajeVino1}!`;
+        const opponentWine = wines[Math.floor(Math.random() * wines.length)];
+        const selectedCategory = categories[Math.floor(Math.random() * categories.length)];
+        
+        const playerValue = selectedCard[selectedCategory];
+        const opponentValue = opponentWine[selectedCategory];
+        
+        let resultMessage = `
+            <div class='col-md-5 card p-3'>
+                <h4>Tu Carta: ${selectedCard.name}</h4>
+                <p>${selectedCategory.toUpperCase()}: ${playerValue}</p>
+            </div>
+            <div class='col-md-5 card p-3'>
+                <h4>Oponente: ${opponentWine.name}</h4>
+                <p>${selectedCategory.toUpperCase()}: ${opponentValue}</p>
+            </div>
+        `;
+        
+        if (playerValue > opponentValue) {
+            resultMessage += "<h3 class='text-success mt-3'>🎉 ¡Ganaste esta ronda! 🎉</h3>";
+        } else if (playerValue < opponentValue) {
+            resultMessage += "<h3 class='text-danger mt-3'>💀 Perdiste esta ronda 💀</h3>";
         } else {
-            resultado = `Es un empate con un puntaje de ${puntajeVino1} para ambos vinos.`;
+            resultMessage += "<h3 class='text-warning mt-3'>🤝 Empate 🤝</h3>";
         }
 
-        // Mostrar el resultado
-        document.getElementById('result').textContent = resultado;
+        document.getElementById("battle-result").innerHTML = resultMessage;
     }
+
+    document.getElementById("fight-btn").addEventListener("click", fight);
+    renderCards();
 </script>
+
+<style>
+    .wine-card {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
+    .wine-card:hover, .wine-card.selected {
+        border-color: #007bff;
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+    }
+</style>
+
 {% endblock %}
