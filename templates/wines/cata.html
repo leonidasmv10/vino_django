@@ -1,108 +1,262 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Card-Jitsu de Vinos 🍷🎴{% endblock %}
+{% block title %}Card Jitsu de Vinos{% endblock %}
 
 {% block content %}
-<div class="container text-center my-5">
-    <h2>🍷 Card-Jitsu de Vinos 🎴</h2>
-    <p>Selecciona una carta y enfréntate al oponente en una categoría aleatoria.</p>
+<div class="container text-center mt-4">
+    <h2>🍷 Card Jitsu de Vinos</h2>
+    <p>Selecciona una carta para enfrentarte a la IA.</p>
 
-    <!-- Cartas del Jugador -->
-    <div class="row justify-content-center my-4" id="player-cards">
-        <!-- Se generarán dinámicamente -->
+    <div class="row justify-content-center">
+        <!-- Cartas de selección del jugador -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <div id="player-card" class="card selected-card">
+                <div class="card-body">
+                    <div class="card-header">
+                        <span id="player-score" class="score">10</span>
+                        <span id="player-element" class="element">🔥</span>
+                    </div>
+                    <img id="player-img" src="{% static 'images/vino.webp' %}" class="card-img-top"
+                        alt="Carta seleccionada">
+                </div>
+            </div>
+        </div>
+
+        <!-- Cartas de la IA -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <div id="ai-card" class="card">
+                <div class="card-body">
+                    <div class="card-header">
+                        <span id="ai-score" class="score">8</span>
+                        <span id="ai-element" class="element">❄️</span>
+                    </div>
+                    <img id="ai-img" src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Carta de la IA">
+                </div>
+            </div>
+        </div>
     </div>
 
-    <button id="fight-btn" class="btn btn-primary mt-3" disabled>Iniciar Ronda</button>
+    <h3 id="result" class="mt-3"></h3>
 
-    <div class="row justify-content-center my-4" id="battle-result">
-        <!-- Resultado de la batalla -->
+    <div class="row mt-4">
+        <h4>Selecciona tu carta</h4>
+        <div class="d-flex justify-content-center flex-wrap" id="player-cards">
+            <!-- Cartas estáticas -->
+        </div>
     </div>
+
+    <div id="game-stats">
+        <h5>Partidas Ganadas:</h5>
+        <p id="player-wins">Jugador: 0</p>
+        <p id="ai-wins">IA: 0</p>
+    </div>
+
 </div>
 
 <script>
-    const wines = [
-        { name: "Vino Tinto", cuerpo: 80, aroma: 70, sabor: 75, img: "{% static 'images/vino.webp' %}" },
-        { name: "Vino Blanco", cuerpo: 60, aroma: 80, sabor: 70, img: "{% static 'images/vino.webp' %}" },
-        { name: "Vino Rosado", cuerpo: 50, aroma: 60, sabor: 65, img: "{% static 'images/vino.webp' %}" }
+    let playerWins = 0;
+    let aiWins = 0;
+    let cards = [
+        { element: '🔥', score: 10, img: '{% static "images/vino.webp" %}' },
+        { element: '💧', score: 7, img: '{% static "images/vino.webp" %}' },
+        { element: '❄️', score: 12, img: '{% static "images/vino.webp" %}' },
+        { element: '🔥', score: 9, img: '{% static "images/vino.webp" %}' },
+        { element: '💧', score: 8, img: '{% static "images/vino.webp" %}' },
+        { element: '❄️', score: 6, img: '{% static "images/vino.webp" %}' },
+        { element: '🔥', score: 11, img: '{% static "images/vino.webp" %}' }
     ];
 
-    let selectedCard = null;
-    const categories = ["cuerpo", "aroma", "sabor"];
+    function initializeGame() {
+        // Mostrar las cartas disponibles
+        const playerCardsContainer = document.getElementById('player-cards');
+        playerCardsContainer.innerHTML = ''; // Limpiar cartas previas
 
-    function renderCards() {
-        const playerCardsContainer = document.getElementById("player-cards");
-        playerCardsContainer.innerHTML = "";
-
-        wines.forEach((wine, index) => {
-            const card = document.createElement("div");
-            card.className = "col-md-3 card shadow p-2 mx-2 wine-card";
-            card.innerHTML = `
-                <img src="${wine.img}" class="card-img-top" alt="${wine.name}" style="height: 150px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title">${wine.name}</h5>
-                    <p>⚔️ Cuerpo: ${wine.cuerpo}</p>
-                    <p>🌿 Aroma: ${wine.aroma}</p>
-                    <p>🍷 Sabor: ${wine.sabor}</p>
+        cards.forEach((card, index) => {
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('game-card');
+            cardDiv.onclick = () => selectCard(index);
+            cardDiv.innerHTML = `
+                <div class="card-header">
+                    <span class="score">${card.score}</span>
+                    <span class="element">${card.element}</span>
                 </div>
+                <img src="${card.img}" alt="${card.element}" class="game-card-img">
             `;
-            card.onclick = () => selectCard(index);
-            playerCardsContainer.appendChild(card);
+            playerCardsContainer.appendChild(cardDiv);
         });
     }
 
-    function selectCard(index) {
-        selectedCard = wines[index];
-        document.querySelectorAll(".wine-card").forEach(card => card.classList.remove("selected"));
-        document.querySelectorAll(".wine-card")[index].classList.add("selected");
-        document.getElementById("fight-btn").disabled = false;
-    }
+    function selectCard(cardIndex) {
+        const selectedCard = cards[cardIndex];
+        document.getElementById('player-element').innerText = selectedCard.element;
+        document.getElementById('player-score').innerText = selectedCard.score;
+        document.getElementById('player-img').src = selectedCard.img;
 
-    function fight() {
-        if (!selectedCard) return;
+        // Eliminar la carta seleccionada
+        cards.splice(cardIndex, 1);
 
-        const opponentWine = wines[Math.floor(Math.random() * wines.length)];
-        const selectedCategory = categories[Math.floor(Math.random() * categories.length)];
-        
-        const playerValue = selectedCard[selectedCategory];
-        const opponentValue = opponentWine[selectedCategory];
-        
-        let resultMessage = `
-            <div class='col-md-5 card p-3'>
-                <h4>Tu Carta: ${selectedCard.name}</h4>
-                <p>${selectedCategory.toUpperCase()}: ${playerValue}</p>
-            </div>
-            <div class='col-md-5 card p-3'>
-                <h4>Oponente: ${opponentWine.name}</h4>
-                <p>${selectedCategory.toUpperCase()}: ${opponentValue}</p>
-            </div>
-        `;
-        
-        if (playerValue > opponentValue) {
-            resultMessage += "<h3 class='text-success mt-3'>🎉 ¡Ganaste esta ronda! 🎉</h3>";
-        } else if (playerValue < opponentValue) {
-            resultMessage += "<h3 class='text-danger mt-3'>💀 Perdiste esta ronda 💀</h3>";
-        } else {
-            resultMessage += "<h3 class='text-warning mt-3'>🤝 Empate 🤝</h3>";
+        // Si ya no quedan cartas, termina el juego
+        if (cards.length === 0) {
+            endGame();
+            return;
         }
 
-        document.getElementById("battle-result").innerHTML = resultMessage;
+        // Reajustar las cartas disponibles
+        initializeGame();
+
+        // Jugar la partida
+        playGame(selectedCard);
     }
 
-    document.getElementById("fight-btn").addEventListener("click", fight);
-    renderCards();
+    function playGame(playerCard) {
+        const elements = ['🔥', '💧', '❄️'];
+        const aiElement = elements[Math.floor(Math.random() * elements.length)];
+        const aiScore = Math.floor(Math.random() * 12) + 1;
+        const aiImg = `{% static 'images/' %}` + (aiElement === '🔥' ? 'vino.webp' : aiElement === '💧' ? 'vino.webp' : 'vino.webp');
+
+        document.getElementById('ai-element').innerText = aiElement;
+        document.getElementById('ai-score').innerText = aiScore;
+        document.getElementById('ai-img').src = aiImg;
+
+        determineWinner(playerCard, aiElement, aiScore);
+    }
+
+    function determineWinner(playerCard, aiElement, aiScore) {
+        const playerScore = playerCard.score;
+        let result = "";
+
+        // No hay empates: Si las cartas tienen el mismo valor, el que tenga la mayor puntuación gana
+        if (playerCard.element === aiElement) {
+            result = playerScore > aiScore ? "¡Ganaste! 🎉" : "Perdiste 😞";
+        } else if (
+            (playerCard.element === '🔥' && aiElement === '❄️') ||
+            (playerCard.element === '❄️' && aiElement === '💧') ||
+            (playerCard.element === '💧' && aiElement === '🔥')
+        ) {
+            result = "¡Ganaste! 🎉";
+            playerWins++;
+        } else {
+            result = "Perdiste 😞";
+            aiWins++;
+        }
+
+        document.getElementById('result').innerText = result;
+        updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('player-wins').innerText = "Jugador: " + playerWins;
+        document.getElementById('ai-wins').innerText = "IA: " + aiWins;
+    }
+
+    function endGame() {
+        let winner = "";
+        if (playerWins > aiWins) {
+            winner = "¡Felicidades! Has ganado más partidas. 🎉";
+        } else {
+            winner = "La IA ha ganado más partidas. 😞";
+        }
+
+        document.getElementById('result').innerText = winner;
+        document.getElementById('game-stats').style.display = 'none'; // Ocultar estadísticas al final
+    }
+
+    // Inicializar el juego al cargar la página
+    window.onload = initializeGame;
 </script>
 
 <style>
-    .wine-card {
+
+    
+    .game-card {
+        width: 110px;
+        /* Tamaño ajustado de las cartas */
+        height: 130px;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 10px;
+        text-align: center;
         cursor: pointer;
-        border: 2px solid transparent;
-        transition: 0.3s;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background-color: #fff;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid #f7b7a3;
+        position: relative;
     }
-    .wine-card:hover, .wine-card.selected {
-        border-color: #007bff;
-        box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+
+    .game-card .element {
+        font-size: 14px; /* Ajustar el tamaño del texto */
+        font-weight: bold;
+        color: white;
+        background-color: #367e35; /* Fondo dorado */
+        padding: 3px 6px; /* Reducir el padding */
+        border-radius: 5px;
+        position: absolute;
+        top: 5px;
+        left: 5px; /* Posición en la esquina superior izquierda */
+    }
+
+    .score {
+        font-size: 14px; /* Ajustar el tamaño del texto */
+        font-weight: bold;
+        color: white;
+        background-color: #d4af37;
+        padding: 3px 6px; /* Reducir el padding */
+        border-radius: 5px;
+        position: absolute;
+        top: 5px;
+        right: 5px; /* Posición en la esquina superior derecha */
+    }
+
+    .game-card:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .element {
+        font-size: 18px;
+        /* Reducir tamaño del texto */
+        font-weight: bold;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        color: #8b2e2a;
+    }
+
+   
+
+    .selected-card {
+        border: 4px solid #d4af37;
+        box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .game-card-img {
+        width: 100%;
+        /* Hacer la imagen del tamaño completo del contenedor */
+        height: 100%;
+        /* Ajustar altura para que ocupe todo el contorno */
+        object-fit: cover;
+        /* Cubrir todo el espacio sin distorsionar */
+        border-radius: 10px;
+        /* Mantener bordes redondeados */
+        margin: 0;
+        /* Eliminar margenes */
+    }
+
+    .card-footer {
+        padding-top: 10px;
+    }
+
+    #game-stats {
+        margin-top: 20px;
+    }
+
+    #game-stats p {
+        font-size: 18px;
+        font-weight: bold;
     }
 </style>
+
 
 {% endblock %}
