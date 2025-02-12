@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre Nosotros - Vinoteca Premium{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+
+    <h2 class="text-center mb-4">🍇 Sobre Nosotros</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">¿Quiénes somos?</h4>
+                </div>
+                <div class="card-body">
+                    <p>En **Vinoteca Premium** nos apasiona el mundo del vino y la cultura vinícola. Nuestra misión es
+                        ofrecer una experiencia única a través de una plataforma donde los usuarios pueden explorar
+                        y aprender sobre diversas variedades de vino. Buscamos acercar el mundo vinícola a los amantes
+                        del vino, brindando información y recursos sobre las mejores opciones de vinos premium, así como
+                        las mejores prácticas para disfrutar de esta fascinante bebida.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nuestra Misión</h4>
+                </div>
+                <div class="card-body">
+                    <p>Nuestra misión es acercar a los entusiastas del vino a las mejores opciones de vinotecas y vinos
+                        de alta
+                        gama. A través de contenido educativo y una experiencia inmersiva, nos esforzamos por crear una
+                        comunidad
+                        de amantes del vino que disfruten y aprendan sobre las distintas variedades, maridajes y
+                        tendencias del
+                        mundo vinícola.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nuestro Equipo</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="{% static 'images/vino.webp' %}" class="card-img-top"
+                                    alt="Miembro del equipo 1">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Juan Pérez</h5>
+                                    <p class="card-text">Fundador y CEO. Amante del vino tinto y la cultura vinícola.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="{% static 'images/vino.webp' %}" class="card-img-top"
+                                    alt="Miembro del equipo 2">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">María López</h5>
+                                    <p class="card-text">Directora de Marketing. Experta en vinos y en crear
+                                        experiencias
+                                        inolvidables para los amantes del vino.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="{% static 'images/vino.webp' %}" class="card-img-top"
+                                    alt="Miembro del equipo 3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Carlos Gómez</h5>
+                                    <p class="card-text">Desarrollador de contenido. Le encanta explorar el mundo
+                                        vinícola y
+                                        compartir su conocimiento con los demás.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

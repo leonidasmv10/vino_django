@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Éxito - Vinoteca Premium{% endblock %}
+
+{% block content %}
+
+<!-- Sección de Éxito -->
+<section class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">✅ ¡Gracias por Contactarnos!</h2>
+        <p>Hola, <strong>{{ nombre }}</strong>. Hemos recibido tu mensaje y nos pondremos en contacto contigo lo antes
+            posible. A continuación, te mostramos los detalles de tu mensaje:</p>
+
+        <div class="alert alert-success mt-4">
+            <h5>Detalles del Mensaje:</h5>
+            <p><strong>Nombre:</strong> {{ nombre }}</p>
+            <p><strong>Correo Electrónico:</strong> {{ email }}</p>
+            <p><strong>Mensaje:</strong> {{ mensaje }}</p>
+        </div>
+
+        <p class="mt-4">Si tienes más preguntas o deseas agregar algo más, no dudes en ponerte en contacto con nosotros
+            nuevamente.</p>
+        <a href="{% url 'home' %}" class="btn btn-success">Volver al Inicio</a>
+    </div>
+</section>
+
+{% endblock %}

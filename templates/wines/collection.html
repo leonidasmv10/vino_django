@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tu Colección de Vinos - Vinoteca Premium{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📚 Tu Colección de Vinos</h2>
+    <div class="btn-group">
+        <button class="btn btn-outline-success">Ordenar por Poder</button>
+        <button class="btn btn-outline-success">Ordenar por Rareza</button>
+        <button class="btn btn-outline-success">Ordenar por Nivel</button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Columna de Filtros (izquierda) -->
+    <div class="col-lg-3">
+        <div class="mb-4">
+            <h5>Filtros de Búsqueda</h5>
+            <!-- Filtro por Categoría -->
+            <div class="form-group">
+                <label for="categoria">Filtrar por Categoría</label>
+                <select class="form-control" id="categoria" onchange="applyFilters()">
+                    <option value="all">Todas las Categorías</option>
+                    <option value="tinto">Vino Tinto</option>
+                    <option value="blanco">Vino Blanco</option>
+                    <option value="rosado">Vino Rosado</option>
+                    <option value="espumoso">Vino Espumoso</option>
+                </select>
+            </div>
+
+            <!-- Filtro por Poder (rango 0-100) -->
+            <div class="form-group mt-3">
+                <label for="poderVino">Filtrar por Poder del Vino (0-100)</label>
+                <input type="range" class="form-control-range" id="poderVino" min="0" max="100" value="0" step="1"
+                    onchange="applyFilters()">
+                <p class="text-muted">Poder: <span id="poderValor">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna de Cartas de Vinos (derecha) -->
+    <div class="col-lg-9">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="vinosContainer">
+            <!-- Vino 1 -->
+            <div class="col vino-card" data-categoria="tinto" data-poder="80" id="vino1">
+                <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
+                    <div class="position-absolute top-0 end-0 m-2 badge bg-danger">
+                        Nivel 5
+                    </div>
+                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Tinto Elegante"
+                        style="height: 120px; object-fit: cover;">
+                    <div class="card-body p-2 text-center">
+                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Tinto Elegante</h5>
+                        <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
+                            <p class="mb-1">⚔️ Cuerpo: 80</p>
+                            <p class="mb-1">🌿 Aroma: 70</p>
+                            <p class="mb-1">🍷 Sabor: 75</p>
+                            <p class="mb-1">🍇 Taninos: 65</p>
+                            <p class="mb-1">🍋 Acidez: 60</p>
+                            <p class="mb-1">🍭 Dulzura: 50</p>
+                        </div>
+                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Pasta, Carnes
+                            Rojas, Quesos Curados</p>
+                    </div>
+                    <div class="card-footer p-2">
+                        <div class="btn-group w-100">
+                            <button class="btn btn-sm btn-success w-50"
+                                onclick="toggleSelection('vino1')">Seleccionar</button>
+                            <button class="btn btn-sm btn-primary w-50">Mejorar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vino 2 -->
+            <div class="col vino-card" data-categoria="blanco" data-poder="60" id="vino2">
+                <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
+                    <div class="position-absolute top-0 end-0 m-2 badge bg-warning">
+                        Nivel 4
+                    </div>
+                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Blanco Fresco"
+                        style="height: 120px; object-fit: cover;">
+                    <div class="card-body p-2 text-center">
+                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Blanco Fresco</h5>
+                        <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
+                            <p class="mb-1">⚔️ Cuerpo: 60</p>
+                            <p class="mb-1">🌿 Aroma: 80</p>
+                            <p class="mb-1">🍷 Sabor: 70</p>
+                            <p class="mb-1">🍇 Taninos: 50</p>
+                            <p class="mb-1">🍋 Acidez: 65</p>
+                            <p class="mb-1">🍭 Dulzura: 55</p>
+                        </div>
+                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Pescados,
+                            Mariscos, Ensaladas</p>
+                    </div>
+                    <div class="card-footer p-2">
+                        <div class="btn-group w-100">
+                            <button class="btn btn-sm btn-success w-50"
+                                onclick="toggleSelection('vino2')">Seleccionar</button>
+                            <button class="btn btn-sm btn-primary w-50">Mejorar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vino 3 -->
+            <div class="col vino-card" data-categoria="rosado" data-poder="50" id="vino3">
+                <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
+                    <div class="position-absolute top-0 end-0 m-2 badge bg-info">
+                        Nivel 3
+                    </div>
+                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Rosado Suave"
+                        style="height: 120px; object-fit: cover;">
+                    <div class="card-body p-2 text-center">
+                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Rosado Suave</h5>
+                        <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
+                            <p class="mb-1">⚔️ Cuerpo: 50</p>
+                            <p class="mb-1">🌿 Aroma: 60</p>
+                            <p class="mb-1">🍷 Sabor: 65</p>
+                            <p class="mb-1">🍇 Taninos: 40</p>
+                            <p class="mb-1">🍋 Acidez: 50</p>
+                            <p class="mb-1">🍭 Dulzura: 60</p>
+                        </div>
+                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Aperitivos,
+                            Ensaladas, Comidas Ligeras</p>
+                    </div>
+                    <div class="card-footer p-2">
+                        <div class="btn-group w-100">
+                            <button class="btn btn-sm btn-success w-50"
+                                onclick="toggleSelection('vino3')">Seleccionar</button>
+                            <button class="btn btn-sm btn-primary w-50">Mejorar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let selectedVino = null;
+
+    // Función para manejar la selección y deselección de vinos
+    function toggleSelection(vinoId) {
+        const vinoElement = document.getElementById(vinoId);
+        const button = vinoElement.querySelector('.btn-success');
+
+        if (selectedVino) {
+            const selectedElement = document.getElementById(selectedVino);
+            selectedElement.classList.remove('selected');
+            const selectedButton = selectedElement.querySelector('.btn-success');
+            selectedButton.textContent = 'Seleccionar';
+        }
+
+        if (selectedVino === vinoId) {
+            selectedVino = null;
+            button.textContent = 'Seleccionar';
+            vinoElement.classList.remove('selected');
+        } else {
+            selectedVino = vinoId;
+            button.textContent = 'Deseleccionar';
+            vinoElement.classList.add('selected');
+        }
+    }
+
+    // Función para aplicar los filtros
+    function applyFilters() {
+        const categoriaFilter = document.getElementById('categoria').value;
+        const poderFilter = document.getElementById('poderVino').value;
+
+        // Actualiza el texto del poder
+        document.getElementById('poderValor').textContent = poderFilter;
+
+        // Filtrar las cartas de vinos
+        const vinos = document.querySelectorAll('.vino-card');
+
+        vinos.forEach(vino => {
+            const vinoCategoria = vino.getAttribute('data-categoria');
+            const vinoPoder = parseInt(vino.getAttribute('data-poder'));
+
+            // Mostrar solo los vinos que coincidan con el filtro
+            if ((categoriaFilter === 'all' || vinoCategoria === categoriaFilter) && vinoPoder >= poderFilter) {
+                vino.style.display = 'block';
+            } else {
+                vino.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+<style>
+    .vino-card {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .vino-card.selected {
+        border: 2px solid #007bff;
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+    }
+
+    .vino-card img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .vino-card .card-body {
+        padding: 15px;
+    }
+</style>
+
+
+
+{% endblock %}

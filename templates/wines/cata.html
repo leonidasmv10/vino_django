@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Competencia de Vinos - Vinoteca Premium{% endblock %}
+
+{% block content %}
+<section id="wine-competition" class="container my-5 text-center">
+    <h2>🍷 Competencia de Vinos</h2>
+
+    <div class="row">
+        <!-- Vino 1 -->
+        <div class="col-6">
+            <div class="wine-card" id="vino1">
+                <h4>Vino 1</h4>
+                <ul id="vino1-stats">
+                    <li><strong>Cuerpo:</strong> <span id="vino1-cuerpo">0</span></li>
+                    <li><strong>Aroma:</strong> <span id="vino1-aroma">0</span></li>
+                    <li><strong>Sabor:</strong> <span id="vino1-sabor">0</span></li>
+                    <li><strong>Taninos:</strong> <span id="vino1-taninos">0</span></li>
+                    <li><strong>Acidez:</strong> <span id="vino1-acidez">0</span></li>
+                    <li><strong>Dulzura:</strong> <span id="vino1-dulzura">0</span></li>
+                    <li><strong>Envejecimiento:</strong> <span id="vino1-envejecimiento">0</span></li>
+                </ul>
+                <p><strong>Maridaje Ideal:</strong> Pasta, Quesos, Carnes Rojas</p>
+            </div>
+        </div>
+
+        <!-- Vino 2 -->
+        <div class="col-6">
+            <div class="wine-card" id="vino2">
+                <h4>Vino 2</h4>
+                <ul id="vino2-stats">
+                    <li><strong>Cuerpo:</strong> <span id="vino2-cuerpo">0</span></li>
+                    <li><strong>Aroma:</strong> <span id="vino2-aroma">0</span></li>
+                    <li><strong>Sabor:</strong> <span id="vino2-sabor">0</span></li>
+                    <li><strong>Taninos:</strong> <span id="vino2-taninos">0</span></li>
+                    <li><strong>Acidez:</strong> <span id="vino2-acidez">0</span></li>
+                    <li><strong>Dulzura:</strong> <span id="vino2-dulzura">0</span></li>
+                    <li><strong>Envejecimiento:</strong> <span id="vino2-envejecimiento">0</span></li>
+                </ul>
+                <p><strong>Maridaje Ideal:</strong> Pescados, Mariscos, Ensaladas</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="iniciarCompetencia()">Iniciar Competencia</button>
+
+    <div class="result" id="result"></div>
+</section>
+
+<script>
+    // Función para generar un número aleatorio entre 1 y 100
+    function generarPuntaje() {
+        return Math.floor(Math.random() * 100) + 1;
+    }
+
+    // Función que inicia la competencia
+    function iniciarCompetencia() {
+        // Generar puntajes aleatorios para Vino 1
+        const vino1 = {
+            cuerpo: generarPuntaje(),
+            aroma: generarPuntaje(),
+            sabor: generarPuntaje(),
+            taninos: generarPuntaje(),
+            acidez: generarPuntaje(),
+            dulzura: generarPuntaje(),
+            envejecimiento: generarPuntaje(),
+        };
+
+        // Generar puntajes aleatorios para Vino 2
+        const vino2 = {
+            cuerpo: generarPuntaje(),
+            aroma: generarPuntaje(),
+            sabor: generarPuntaje(),
+            taninos: generarPuntaje(),
+            acidez: generarPuntaje(),
+            dulzura: generarPuntaje(),
+            envejecimiento: generarPuntaje(),
+        };
+
+        // Mostrar puntajes en la interfaz
+        document.getElementById('vino1-cuerpo').textContent = vino1.cuerpo;
+        document.getElementById('vino1-aroma').textContent = vino1.aroma;
+        document.getElementById('vino1-sabor').textContent = vino1.sabor;
+        document.getElementById('vino1-taninos').textContent = vino1.taninos;
+        document.getElementById('vino1-acidez').textContent = vino1.acidez;
+        document.getElementById('vino1-dulzura').textContent = vino1.dulzura;
+        document.getElementById('vino1-envejecimiento').textContent = vino1.envejecimiento;
+
+        document.getElementById('vino2-cuerpo').textContent = vino2.cuerpo;
+        document.getElementById('vino2-aroma').textContent = vino2.aroma;
+        document.getElementById('vino2-sabor').textContent = vino2.sabor;
+        document.getElementById('vino2-taninos').textContent = vino2.taninos;
+        document.getElementById('vino2-acidez').textContent = vino2.acidez;
+        document.getElementById('vino2-dulzura').textContent = vino2.dulzura;
+        document.getElementById('vino2-envejecimiento').textContent = vino2.envejecimiento;
+
+        // Calcular puntaje total de cada vino
+        const puntajeVino1 = Object.values(vino1).reduce((acc, val) => acc + val, 0);
+        const puntajeVino2 = Object.values(vino2).reduce((acc, val) => acc + val, 0);
+
+        // Determinar el ganador
+        let resultado = '';
+        if (puntajeVino1 > puntajeVino2) {
+            resultado = `¡Vino 1 gana con un puntaje de ${puntajeVino1} frente a ${puntajeVino2}!`;
+        } else if (puntajeVino2 > puntajeVino1) {
+            resultado = `¡Vino 2 gana con un puntaje de ${puntajeVino2} frente a ${puntajeVino1}!`;
+        } else {
+            resultado = `Es un empate con un puntaje de ${puntajeVino1} para ambos vinos.`;
+        }
+
+        // Mostrar el resultado
+        document.getElementById('result').textContent = resultado;
+    }
+</script>
+{% endblock %}

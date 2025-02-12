@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Ranking Global - Vinoteca Premium{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+    <h2 class="text-center mb-4">🏆 Ranking Global</h2>
+    <div class="row">
+        <!-- Tabla de Ranking -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0">Top Jugadores</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Posición</th>
+                                    <th>Jugador</th>
+                                    <th>Victorias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-warning">
+                                    <td>🥇 1</td>
+                                    <td>MasterTamer</td>
+                                    <td>1,245</td>
+                                </tr>
+                                <tr class="table-secondary">
+                                    <td>🥈 2</td>
+                                    <td>BeastKing</td>
+                                    <td>1,180</td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td>🥉 3</td>
+                                    <td>WildHunter</td>
+                                    <td>1,150</td>
+                                </tr>
+                                <!-- Aquí puedes iterar con Django para agregar más jugadores dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección informativa sobre el ranking -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="mb-0">¿Cómo funciona el Ranking?</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p>El ranking global muestra a los jugadores con más victorias en catas y competiciones de la
+                        Vinoteca Premium.</p>
+                    <p>Las posiciones se determinan en función del número total de victorias acumuladas.</p>
+                    <p>¡Sigue participando para ascender en la clasificación y demostrar tu experiencia en vinos!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

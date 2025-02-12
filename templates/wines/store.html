@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tienda - Vinoteca Premium{% endblock %}
+
+{% block content %}
+
+<!-- Sección de Tienda -->
+<section id="store" class="container my-5">
+    <h2 class="text-center mb-4">🏪 Tienda de Vinos</h2>
+
+    <!-- Tarjetas de Vinos -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Vino Misterioso -->
+        <div class="col">
+            <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+                <div class="position-absolute top-0 end-0 m-3 badge bg-success">20% DESC</div>
+                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Misterioso"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Caja de Vino Misterioso (3 botellas)</h5>
+                    <p class="card-text">💰 100 monedas</p>
+                    <a href="#" class="btn btn-success w-100">Comprar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vino Premium -->
+        <div class="col">
+            <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+                <div class="position-absolute top-0 end-0 m-3 badge bg-warning">PREMIUM</div>
+                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Premium"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Caja de Vino Premium (3 botellas)</h5>
+                    <p class="card-text">💰 250 monedas</p>
+                    <a href="#" class="btn btn-warning w-100">Comprar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vino Legendario -->
+        <div class="col">
+            <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+                <div class="position-absolute top-0 end-0 m-3 badge bg-danger">LEGENDARIO</div>
+                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Legendario"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Caja de Vino Legendario (3 botellas)</h5>
+                    <p class="card-text">💰 500 monedas</p>
+                    <a href="#" class="btn btn-danger w-100">Comprar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
