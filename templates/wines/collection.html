@@ -40,101 +40,36 @@
         </div>
     </div>
 
-    <!-- Columna de Cartas de Vinos (derecha) -->
     <div class="col-lg-9">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="vinosContainer">
-            <!-- Vino 1 -->
-            <div class="col vino-card" data-categoria="tinto" data-poder="80" id="vino1">
+            {% for vino in vinos %}
+            <div class="col vino-card" id="vino{{ vino.id }}">
                 <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
-                    <div class="position-absolute top-0 end-0 m-2 badge bg-danger">
-                        Nivel 5
-                    </div>
-                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Tinto Elegante"
+
+                    <img src="{{ vino.imagen.url }}" class="card-img-top" alt="{{ vino.nombre }}"
                         style="height: 120px; object-fit: cover;">
                     <div class="card-body p-2 text-center">
-                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Tinto Elegante</h5>
+                        <h5 class="card-title text-truncate" style="font-size: 1rem;">{{ vino.nombre }}</h5>
                         <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
-                            <p class="mb-1">⚔️ Cuerpo: 80</p>
-                            <p class="mb-1">🌿 Aroma: 70</p>
-                            <p class="mb-1">🍷 Sabor: 75</p>
-                            <p class="mb-1">🍇 Taninos: 65</p>
-                            <p class="mb-1">🍋 Acidez: 60</p>
-                            <p class="mb-1">🍭 Dulzura: 50</p>
+                            <p class="mb-1">⚔️ Cuerpo: {{ vino.cuerpo }}</p>
+                            <p class="mb-1">🌿 Aroma: {{ vino.aroma }}</p>
+                            <p class="mb-1">🍷 Sabor: {{ vino.sabor }}</p>
+                            <p class="mb-1">🍇 Taninos: {{ vino.taninos }}</p>
+                            <p class="mb-1">🍋 Acidez: {{ vino.acidez }}</p>
+                            <p class="mb-1">🍭 Dulzura: {{ vino.dulzura }}</p>
                         </div>
-                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Pasta, Carnes
-                            Rojas, Quesos Curados</p>
+                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: {{ vino.maridaje }}</p>
                     </div>
                     <div class="card-footer p-2">
                         <div class="btn-group w-100">
                             <button class="btn btn-sm btn-success w-50"
-                                onclick="toggleSelection('vino1')">Seleccionar</button>
+                                onclick="toggleSelection('vino{{ vino.id }}')">Seleccionar</button>
                             <button class="btn btn-sm btn-primary w-50">Editar</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Vino 2 -->
-            <div class="col vino-card" data-categoria="blanco" data-poder="60" id="vino2">
-                <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
-                    <div class="position-absolute top-0 end-0 m-2 badge bg-warning">
-                        Nivel 4
-                    </div>
-                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Blanco Fresco"
-                        style="height: 120px; object-fit: cover;">
-                    <div class="card-body p-2 text-center">
-                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Blanco Fresco</h5>
-                        <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
-                            <p class="mb-1">⚔️ Cuerpo: 60</p>
-                            <p class="mb-1">🌿 Aroma: 80</p>
-                            <p class="mb-1">🍷 Sabor: 70</p>
-                            <p class="mb-1">🍇 Taninos: 50</p>
-                            <p class="mb-1">🍋 Acidez: 65</p>
-                            <p class="mb-1">🍭 Dulzura: 55</p>
-                        </div>
-                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Pescados,
-                            Mariscos, Ensaladas</p>
-                    </div>
-                    <div class="card-footer p-2">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-sm btn-success w-50"
-                                onclick="toggleSelection('vino2')">Seleccionar</button>
-                            <button class="btn btn-sm btn-primary w-50">Mejorar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Vino 3 -->
-            <div class="col vino-card" data-categoria="rosado" data-poder="50" id="vino3">
-                <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
-                    <div class="position-absolute top-0 end-0 m-2 badge bg-info">
-                        Nivel 3
-                    </div>
-                    <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino Rosado Suave"
-                        style="height: 120px; object-fit: cover;">
-                    <div class="card-body p-2 text-center">
-                        <h5 class="card-title text-truncate" style="font-size: 1rem;">Vino Rosado Suave</h5>
-                        <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
-                            <p class="mb-1">⚔️ Cuerpo: 50</p>
-                            <p class="mb-1">🌿 Aroma: 60</p>
-                            <p class="mb-1">🍷 Sabor: 65</p>
-                            <p class="mb-1">🍇 Taninos: 40</p>
-                            <p class="mb-1">🍋 Acidez: 50</p>
-                            <p class="mb-1">🍭 Dulzura: 60</p>
-                        </div>
-                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: Aperitivos,
-                            Ensaladas, Comidas Ligeras</p>
-                    </div>
-                    <div class="card-footer p-2">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-sm btn-success w-50"
-                                onclick="toggleSelection('vino3')">Seleccionar</button>
-                            <button class="btn btn-sm btn-primary w-50">Mejorar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
