@@ -1,17 +1,14 @@
-from .models import Perfil
-
-
-from .models import Perfil
+from .models import Profile
 
 
 def user_profile(request):
     if request.user.is_authenticated:
-        perfil = Perfil.objects.filter(user=request.user).first()
+        profile = Profile.objects.filter(user=request.user).first()
         return {
-            "monedas": perfil.monedas if perfil else 0,
-            "username": perfil.user.username if perfil else "username",
+            "username": profile.user.username if profile else "username",
+            "coins": profile.coins if profile else 0,
         }
     return {
-        "monedas": 0,
+        "coins": 0,
         "username": "username",
     }

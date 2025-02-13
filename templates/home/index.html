@@ -19,150 +19,74 @@
     <h2 class="text-center mb-4">🍇 Noticias y Eventos</h2>
     <div class="row">
         <div class="col-md-6">
-            <div class="alert alert-warning">
-                <h5>🎉 ¡Evento Especial!</h5>
-                <p>Este fin de semana: ¡Probabilidad duplicada de obtener vinos exclusivos!</p>
+            <div class="alert alert-warning d-flex align-items-center">
+                <i class="fas fa-gift fa-2x me-3"></i>
+                <div>
+                    <h5>🎉 ¡Evento Especial!</h5>
+                    <p>Este fin de semana: ¡Probabilidad duplicada de obtener vinos exclusivos!</p>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="alert alert-info">
-                <h5>🆕 Nueva Selección</h5>
-                <p>Descubre los nuevos vinos premium disponibles en nuestra tienda.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Ofertas y Beneficios -->
-<section class="container my-5">
-    <h2 class="text-center mb-4">🎁 Ofertas y Beneficios</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 1">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Tinto Premium</h5>
-                    <p class="card-text">Un vino robusto con notas de frutos rojos y un toque de roble.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 2">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Blanco Elegante</h5>
-                    <p class="card-text">Fresco y floral, ideal para maridar con mariscos y quesos suaves.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 3">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Rosado Refrescante</h5>
-                    <p class="card-text">Delicado y afrutado, perfecto para una tarde de verano.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="fas fa-newspaper fa-2x me-3"></i>
+                <div>
+                    <h5>🆕 Nueva Selección</h5>
+                    <p>Descubre los nuevos vinos premium disponibles en nuestra tienda.</p>
                 </div>
             </div>
         </div>
     </div>
-</section>
-
-<!-- Sección de Testimonios -->
-<section class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">🥂 Testimonios</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <img src="{% static 'images/vino.webp' %}" class="img-fluid rounded-circle mb-3"
-                            alt="Cliente 1">
-                        <h5 class="card-title">Juan Gómez</h5>
-                        <p class="card-text">"Una experiencia única al comprar vino en línea. La calidad es
-                            impresionante y la entrega muy rápida."</p>
-                    </div>
+    <!-- Slider de Noticias -->
+    <div id="newsCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="alert alert-success">
+                    <h5>🍇 Oferta Limitada</h5>
+                    <p>Compra 2 botellas y obtén una gratis. ¡No te lo pierdas!</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <img src="{% static 'images/vino.webp' %}" class="img-fluid rounded-circle mb-3"
-                            alt="Cliente 2">
-                        <h5 class="card-title">Ana María</h5>
-                        <p class="card-text">"¡Me encantaron los vinos que pedí! Todos son de excelente calidad y el
-                            servicio es de 10."</p>
-                    </div>
+            <div class="carousel-item">
+                <div class="alert alert-danger">
+                    <h5>🎁 Regalos Exclusivos</h5>
+                    <p>¡Obtén un regalo especial por tu compra de vino premium!</p>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <img src="{% static 'images/vino.webp' %}" class="img-fluid rounded-circle mb-3"
-                            alt="Cliente 3">
-                        <h5 class="card-title">Carlos Ruiz</h5>
-                        <p class="card-text">"Vinoteca Premium ha elevado mi experiencia con el vino a un nivel
-                            completamente nuevo. ¡Totalmente recomendado!"</p>
-                    </div>
+            <div class="carousel-item">
+                <div class="alert alert-primary">
+                    <h5>🥂 Eventos Privados</h5>
+                    <p>Únete a nuestras catas privadas y descubre vinos únicos.</p>
                 </div>
             </div>
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
 </section>
 
 <!-- Colección Destacada -->
 <section id="collection" class="container my-5">
     <h2 class="text-center mb-4">🍷 Colección Destacada</h2>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 1">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for wine in wines %}
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <img src="{{ wine.image.url }}" class="card-img-top" alt="{{ wine.name }}" 
+                     style="height: 200px; object-fit: cover; transition: transform 0.3s;">
                 <div class="card-body">
-                    <h5 class="card-title">Vino Tinto Premium</h5>
-                    <p class="card-text">Un vino robusto con notas de frutos rojos y un toque de roble.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
+                    <h5 class="card-title">{{ wine.name }}</h5>
+                    <p class="card-text" style="font-size: 0.9rem; color: #555;">{{ wine.description }}</p>
+                    <p class="text-muted" style="font-size: 1rem; font-weight: bold;">💲 {{ wine.price }} </p>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 2">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Blanco Elegante</h5>
-                    <p class="card-text">Fresco y floral, ideal para maridar con mariscos y quesos suaves.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 3">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Rosado Refrescante</h5>
-                    <p class="card-text">Delicado y afrutado, perfecto para una tarde de verano.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card">
-                <img src="{% static 'images/vino.webp' %}" class="card-img-top" alt="Vino 4">
-                <div class="card-body">
-                    <h5 class="card-title">Vino Espumoso</h5>
-                    <p class="card-text">Vino con burbujas finas, ideal para celebraciones y eventos especiales.</p>
-                    <a href="#" class="btn btn-success">Ver más</a>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </section>
 

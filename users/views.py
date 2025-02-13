@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .models import Perfil
+from .models import Profile
 
 
 def login_view(request):
@@ -44,7 +44,7 @@ def register(request):
             password_hash = make_password(password)
             user = User.objects.create(username=username, password=password_hash)
             user.save()
-            Perfil.objects.create(user=user)
+            Profile.objects.create(user=user)
             messages.success(request, "¡Te has registrado con éxito!")
             return redirect("login")
 
@@ -60,7 +60,7 @@ def ranking(request):
 
 @login_required
 def profile_view(request):
-    profile = Perfil.objects.get(user=request.user)
+    profile = Profile.objects.get(user=request.user)
     return render(request, "users/profile.html", {"profile": profile})
 
 

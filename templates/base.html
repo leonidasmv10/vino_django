@@ -8,6 +8,7 @@
     <title>{% block title %}Vinoteca Premium{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
@@ -40,7 +41,7 @@
                     {% if user.is_authenticated %}
                     <div class="navbar-text text-light ms-3">
                         <!-- <span class="me-3">Hola <span id="coins">{{ username }}</span></span> -->
-                        <span class="me-3">💰 Monedas: <span id="coins">{{ monedas }}</span></span>
+                        <span class="me-3">💰 Monedas: <span id="coins">{{ coins }}</span></span>
                     </div>
                     <!-- <a class="nav-link text-light" href="{% url 'profile' %}">👤 Perfil</a> -->
                     <form action="{% url 'logout' %}" method="POST" class="d-inline">

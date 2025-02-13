@@ -1,62 +1,66 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Crear Nuevo Vino - Vinoteca Premium{% endblock %}
+{% block title %}Actualizar Vino - Vinoteca Premium{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">🍷 Crear Nuevo Vino</h2>
+    <h2 class="mb-4">🍷 Actualizar Vino</h2>
 
-    <form method="POST" action="{% url 'add_wine' %}" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'update_wine' wine.id %}" enctype="multipart/form-data">
         {% csrf_token %}
 
         <!-- Nombre del Vino -->
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label for="name">Nombre del Vino:</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Ej: Malbec Reserva" required>
+            <input type="text" class="form-control" id="name" name="name" value="{{ wine.name }}" required>
         </div>
 
         <!-- Descripción -->
-        <div class="form-group mt-3">
+        <div class="form-group mb-3">
             <label for="description">Descripción:</label>
             <textarea class="form-control" id="description" name="description" rows="3"
-                placeholder="Escribe una breve descripción del vino..." required></textarea>
+                required>{{ wine.description }}</textarea>
         </div>
 
         <!-- Precio -->
-        <div class="form-group mt-3">
+        <div class="form-group mb-3">
             <label for="price">Precio (EU):</label>
-            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0"
-                placeholder="Ej: 25.99" required>
+            <input type="number" class="form-control" id="price" name="price" value="{{ wine.price }}" step="0.01"
+                required>
         </div>
 
-        <!-- Categoría (Dinámica desde la BD) -->
-        <div class="form-group mt-3">
+        <!-- Categoría -->
+        <div class="form-group mb-3">
             <label for="category">Categoría:</label>
             <select class="form-control" id="category" name="category" required>
-                <option value="" disabled selected>Selecciona una categoría</option>
                 {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
+                <option value="{{ category.id }}" {% if category.id == wine.category.id %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
                 {% endfor %}
-
             </select>
         </div>
 
         <!-- Imagen del Vino -->
-        <div class="form-group mt-3">
+        <div class="form-group mb-3">
             <label for="image">Imagen del Vino:</label>
-            <input type="file" class="form-control-file" id="image" name="image" accept="image/*"
-                onchange="previewImage()">
+            <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
             <small class="text-muted">Sube una imagen del vino en formato JPG, PNG o GIF.</small>
+            {% if wine.image %}
             <div class="mt-3">
-                <img id="imagePreview" src="#" alt="Vista previa de la imagen" class="img-fluid d-none"
-                    style="max-width: 200px;" required>
+                <img src="{{ wine.image.url }}" alt="Imagen del vino" class="img-fluid" style="max-width: 200px;">
             </div>
+            {% else %}
+            <p class="text-muted">No hay imagen previa para este vino.</p>
+            {% endif %}
         </div>
 
-        <!-- Botón de Enviar -->
-        <button type="submit" class="btn btn-success mt-4">✅ Guardar Vino</button>
+        <!-- Botón de Actualizar -->
+        <button type="submit" class="btn btn-success mt-4">Actualizar Vino</button>
     </form>
+    <br>
+
 </div>
 
 <script>
@@ -72,8 +76,7 @@
             };
             reader.readAsDataURL(file);
         } else {
-            preview.src = "#";
-            preview.classList.add("d-none");
+            preview.src = "{{ wine.image.url }}";
         }
     }
 </script>

@@ -2,28 +2,28 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Perfil(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    monedas = models.IntegerField(default=50)
-    victorias = models.IntegerField(default=0)
-    vinos = models.ManyToManyField("wines.Vino", blank=True)
+    coins = models.IntegerField(default=50)
+    victories = models.IntegerField(default=0)
+    wines = models.ManyToManyField("wines.Wine", blank=True) # Relación muchos a muchos
 
     def __str__(self):
-        return f"Perfil de {self.user.username}"
+        return f"Profile of {self.user.username}"
 
-    def agregar_monedas(self, cantidad):
-        self.monedas += cantidad
+    def add_coins(self, amount):
+        self.coins += amount
         self.save()
 
-    def restar_monedas(self, cantidad):
-        if self.monedas >= cantidad:
-            self.monedas -= cantidad
+    def subtract_coins(self, amount):
+        if self.coins >= amount:
+            self.coins -= amount
             self.save()
 
-    def agregar_victoria(self):
-        self.victorias += 1
+    def add_victory(self):
+        self.victories += 1
         self.save()
 
-    def agregar_puntos(self, cantidad):
-        self.puntos += cantidad
+    def add_points(self, amount):
+        self.points += amount
         self.save()

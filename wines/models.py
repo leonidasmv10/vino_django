@@ -1,52 +1,40 @@
 from django.db import models
 
 
-# Create your models here.
-class Vino(models.Model):
-    nombre = models.CharField(max_length=255)
-    descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    imagen = models.ImageField(
-        upload_to="vinos/", default="ruta/a/una/imagen/predeterminada.jpg"
-    )
-
-    # Variables de puntuación
-    cuerpo = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    aroma = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    sabor = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    taninos = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    acidez = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    dulzura = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-    envejecimiento = models.IntegerField(
-        default=50, choices=[(i, i) for i in range(1, 101)]
-    )  # De 1 a 100
-
-    # Maridaje
-    maridaje = models.TextField(default="Pasta, Quesos, Carnes Rojas")  # Ejemplo
+class Category(models.Model):
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
-    def puntuacion_total(self):
-        # Método para calcular la puntuación total del vino
-        return (
-            self.cuerpo
-            + self.aroma
-            + self.sabor
-            + self.taninos
-            + self.acidez
-            + self.dulzura
-            + self.envejecimiento
-        ) / 7
+
+class Wine(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to="wines/", default="wines/img.jpg")
+    body = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    aroma = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    taste = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    tannins = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    acidity = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    sweetness = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    aging = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+
+    def __str__(self):
+        return self.name
+
+    def total_score(self):
+        return round(
+            (
+                self.body
+                + self.aroma
+                + self.taste
+                + self.tannins
+                + self.acidity
+                + self.sweetness
+                + self.aging
+            )
+            / 7
+        )

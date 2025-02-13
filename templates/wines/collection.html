@@ -22,17 +22,16 @@
             <div class="form-group">
                 <label for="categoria">Filtrar por Categoría</label>
                 <select class="form-control" id="categoria" onchange="applyFilters()">
-                    <option value="all">Todas las Categorías</option>
-                    <option value="tinto">Vino Tinto</option>
-                    <option value="blanco">Vino Blanco</option>
-                    <option value="rosado">Vino Rosado</option>
-                    <option value="espumoso">Vino Espumoso</option>
+                    <option value="-1">Todas las Categorías</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
             <!-- Filtro por Poder (rango 0-100) -->
             <div class="form-group mt-3">
-                <label for="poderVino">Filtrar por Poder del Vino (0-100)</label>
+                <label for="poderVino">Filtrar por puntuación del Vino (0-100)</label>
                 <input type="range" class="form-control-range" id="poderVino" min="0" max="100" value="0" step="1"
                     onchange="applyFilters()">
                 <p class="text-muted">Poder: <span id="poderValor">0</span></p>
@@ -42,29 +41,57 @@
 
     <div class="col-lg-9">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="vinosContainer">
-            {% for vino in vinos %}
-            <div class="col vino-card" id="vino{{ vino.id }}">
+            {% for item in wines_with_scores %}
+            <div class="col vino-card" id="vino{{ wine.id }}">
                 <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
 
-                    <img src="{{ vino.imagen.url }}" class="card-img-top" alt="{{ vino.nombre }}"
+                    <div class="total-score position-absolute top-0 end-0 m-2 p-2 
+                    {% if item.wine.category.id == 1 %}bg-danger text-white{% elif item.wine.category.id == 2 %}bg-light text-dark{% elif item.wine.category.id == 3 %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}
+                    rounded-circle shadow-lg"
+                        style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
+                        <strong> {{ item.total_score }} </strong>
+                    </div>
+
+                    <!-- Colocamos el puntaje en la parte superior izquierda -->
+                    <div class="total-score position-absolute top-0 start-0 m-2 p-2 bg-dark text-white rounded-circle shadow-lg"
+                        style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem;">
+                        {% if item.wine.category.id == 1 %}
+                        🔥
+                        {% elif item.wine.category.id == 2 %}
+                        ❄️
+                        {% elif item.wine.category.id == 3 %}
+                        💧
+                        {% else %}
+                        ?
+                        {% endif %}
+                    </div>
+
+
+
+                    <img src="{{ item.wine.image.url }}" class="card-img-top" alt="{{ item.wine.nombre }}"
                         style="height: 120px; object-fit: cover;">
                     <div class="card-body p-2 text-center">
-                        <h5 class="card-title text-truncate" style="font-size: 1rem;">{{ vino.nombre }}</h5>
+                        <h5 class="card-title text-truncate" style="font-size: 1rem;">{{ item.wine.name }}</h5>
                         <div class="stats d-flex justify-content-between flex-wrap" style="font-size: 0.8rem;">
-                            <p class="mb-1">⚔️ Cuerpo: {{ vino.cuerpo }}</p>
-                            <p class="mb-1">🌿 Aroma: {{ vino.aroma }}</p>
-                            <p class="mb-1">🍷 Sabor: {{ vino.sabor }}</p>
-                            <p class="mb-1">🍇 Taninos: {{ vino.taninos }}</p>
-                            <p class="mb-1">🍋 Acidez: {{ vino.acidez }}</p>
-                            <p class="mb-1">🍭 Dulzura: {{ vino.dulzura }}</p>
+                            <p class="mb-1">⚔️ Cuerpo: {{ item.wine.body }}</p>
+                            <p class="mb-1">🌿 Aroma: {{ item.wine.aroma }}</p>
+                            <p class="mb-1">🍷 Sabor: {{ item.wine.taste }}</p>
+                            <p class="mb-1">🍇 Taninos: {{ item.wine.tannins }}</p>
+                            <p class="mb-1">🍋 Acidez: {{ item.wine.acidity }}</p>
+                            <p class="mb-1">🍭 Dulzura: {{ item.wine.sweetness }}</p>
+                            <p class="mb-1">🏺 Vintage: {{ item.wine.aging }}</p>
+                            <p class="mb-1 text-center" style="font-size: 1.2rem; font-weight: bold;">
+                                💲 {{ item.wine.price }}
+                            </p>
+
                         </div>
-                        <p class="text-muted mt-1 text-truncate" style="font-size: 0.8rem;">Maridaje: {{ vino.maridaje }}</p>
                     </div>
                     <div class="card-footer p-2">
                         <div class="btn-group w-100">
-                            <button class="btn btn-sm btn-success w-50"
-                                onclick="toggleSelection('vino{{ vino.id }}')">Seleccionar</button>
-                            <button class="btn btn-sm btn-primary w-50">Editar</button>
+                            <a href="{% url 'update_wine' item.wine.id %}"
+                                class="btn btn-sm btn-primary w-50">Editar</a>
+                            <a href="{% url 'delete_wine' item.wine.id %}"
+                                class="btn btn-sm btn-danger w-50">Eliminar</a>
                         </div>
                     </div>
                 </div>
@@ -75,56 +102,6 @@
 
 </div>
 
-<script>
-    let selectedVino = null;
-
-    // Función para manejar la selección y deselección de vinos
-    function toggleSelection(vinoId) {
-        const vinoElement = document.getElementById(vinoId);
-        const button = vinoElement.querySelector('.btn-success');
-
-        if (selectedVino) {
-            const selectedElement = document.getElementById(selectedVino);
-            selectedElement.classList.remove('selected');
-            const selectedButton = selectedElement.querySelector('.btn-success');
-            selectedButton.textContent = 'Seleccionar';
-        }
-
-        if (selectedVino === vinoId) {
-            selectedVino = null;
-            button.textContent = 'Seleccionar';
-            vinoElement.classList.remove('selected');
-        } else {
-            selectedVino = vinoId;
-            button.textContent = 'Deseleccionar';
-            vinoElement.classList.add('selected');
-        }
-    }
-
-    // Función para aplicar los filtros
-    function applyFilters() {
-        const categoriaFilter = document.getElementById('categoria').value;
-        const poderFilter = document.getElementById('poderVino').value;
-
-        // Actualiza el texto del poder
-        document.getElementById('poderValor').textContent = poderFilter;
-
-        // Filtrar las cartas de vinos
-        const vinos = document.querySelectorAll('.vino-card');
-
-        vinos.forEach(vino => {
-            const vinoCategoria = vino.getAttribute('data-categoria');
-            const vinoPoder = parseInt(vino.getAttribute('data-poder'));
-
-            // Mostrar solo los vinos que coincidan con el filtro
-            if ((categoriaFilter === 'all' || vinoCategoria === categoriaFilter) && vinoPoder >= poderFilter) {
-                vino.style.display = 'block';
-            } else {
-                vino.style.display = 'none';
-            }
-        });
-    }
-</script>
 
 <style>
     .vino-card {

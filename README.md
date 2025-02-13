@@ -16,7 +16,7 @@ python manage.py makemigrations nombre_de_la_aplicacion
 
 # Crear archivos migración:
 
-py manage.py makemigrations members
+py manage.py makemigrations
 
 # Verificar 1era migración:
 
@@ -41,3 +41,19 @@ py manage.py runserver
 # Dependencias:
 
 pip install Jinja2 django-jinja
+
+
+Vino Tinto (Fuego): Representa vinos fuertes y potentes, como el fuego.
+
+Vino Blanco (Nieve): Representa vinos frescos y ligeros, como la nieve.
+
+Vino Rosado (Agua): Representa vinos suaves y fluidos, como el agua.
+
+
+# Crear admin:
+
+python manage.py createsuperuser
+
+# Añadir vino automatica:
+
+python manage.py add_wine

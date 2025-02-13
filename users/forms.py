@@ -1,10 +1,5 @@
-# users/forms.py
-
 from django import forms
 from django.contrib.auth.models import User
-
-# from .models import Perfil
-
 
 class RegisterForm(forms.ModelForm):
     class Meta:
