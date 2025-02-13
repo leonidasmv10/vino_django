@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Generador de Cartas - Tienda de Vinos{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+        color: rgb(0, 0, 0);
+        text-align: center;
+    }
+
+    .card-reveal {
+        perspective: 1000px;
+    }
+
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+    }
+
+    .flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .card {
+        width: 250px;
+        height: 400px;
+        /* Reducido para que no sea tan alto */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 15px;
+        overflow: hidden;
+        margin: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .card-front,
+    .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+
+    .card-front {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        /* Ajustado para mejor espacio */
+        font-weight: bold;
+        background: #e0e0e0;
+        /* Color gris claro */
+        color: rgb(0, 0, 0);
+        border-radius: 15px;
+    }
+
+    .card-back {
+        transform: rotateY(180deg);
+        background: linear-gradient(45deg, #d3d3d3, #bdbdbd);
+        /* Gradiente gris suave */
+    }
+
+    .card-back img {
+        width: 100%;
+        height: 150px;
+        /* Reducido tamaño de la imagen */
+        object-fit: cover;
+    }
+
+    .rarity-legendary {
+        animation: legendary-glow 2s infinite;
+    }
+
+    @keyframes legendary-glow {
+        0% {
+            box-shadow: 0 0 5px #ffd700;
+        }
+
+        50% {
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        100% {
+            box-shadow: 0 0 5px #ffd700;
+        }
+    }
+
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .card-body {
+        font-size: 0.9rem;
+        /* Fuente más pequeña para los textos */
+    }
+
+    .card-body p {
+        margin: 5px 0;
+        /* Reducido margen entre las líneas */
+    }
+
+    /* Estilo del botón de regresar */
+    #backButton {
+        display: none;
+        margin-top: 20px;
+    }
+</style>
+
+<body>
+    <h1 class="my-4">🎴 ¡Tus nuevos vinos! 🎴</h1>
+    <a href="{% url 'store' %}" id="backButton"  class="btn btn-primary mb-4">Regresar</a>
+    
+    <div class="container">
+        <div class="row g-4 justify-content-center card-container" id="cardContainer">
+            <!-- Cartas generadas dinámicamente -->
+        </div>
+        
+    </div>
+
+    <script>
+        // Esta función simula la obtención de vinos desde el backend
+        function generateRandomCard() {
+            const wines = [
+                {
+                    name: 'Vino Tinto Reserva',
+                    rarity: 'legendary',
+                    stats: { body: 90, aroma: 88, taste: 92, tannins: 85, acidity: 80, sweetness: 75, aging: 95 },
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
+                },
+                {
+                    name: 'Vino Blanco Chardonnay',
+                    rarity: 'epic',
+                    stats: { body: 80, aroma: 82, taste: 85, tannins: 70, acidity: 75, sweetness: 80, aging: 90 },
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
+                },
+                {
+                    name: 'Vino Rosado Tempranillo',
+                    rarity: 'rare',
+                    stats: { body: 75, aroma: 78, taste: 80, tannins: 65, acidity: 70, sweetness: 85, aging: 80 },
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
+                },
+                {
+                    name: 'Vino Merlot Clásico',
+                    rarity: 'common',
+                    stats: { body: 70, aroma: 68, taste: 72, tannins: 65, acidity: 60, sweetness: 65, aging: 70 },
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
+                }
+            ];
+            return wines[Math.floor(Math.random() * wines.length)];
+        }
+
+        function createCardHTML(card, index) {
+            return `
+                <div class="col-md-4">
+                    <div class="card-reveal" id="card-${index}">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                ?
+                            </div>
+                            <div class="card-back">
+                                <div class="card h-auto ${card.rarity === 'legendary' ? 'rarity-legendary' : ''}">
+                                    <img src="${card.image}" class="card-img-top" alt="${card.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${card.name}</h5>
+                                        <p>⚔️ Cuerpo: ${card.stats.body}</p>
+                                        <p>🌿 Aroma: ${card.stats.aroma}</p>
+                                        <p>🍷 Sabor: ${card.stats.taste}</p>
+                                        <p>🍇 Taninos: ${card.stats.tannins}</p>
+                                        <p>🍋 Acidez: ${card.stats.acidity}</p>
+                                        <p>🍭 Dulzura: ${card.stats.sweetness}</p>
+                                        <p>🏺 Envejecimiento: ${card.stats.aging}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showCardReveal(numCards = 3) {
+            const cardContainer = document.getElementById('cardContainer');
+            cardContainer.innerHTML = '';
+
+            let cards = [];
+            for (let i = 0; i < numCards; i++) {
+                const card = generateRandomCard();
+                const cardHTML = createCardHTML(card, i);
+                cards.push(cardHTML);
+            }
+
+            cardContainer.innerHTML = cards.join('');
+
+            // Revelar cartas una por una con un retraso progresivo
+            setTimeout(() => {
+                document.querySelectorAll('.card-reveal').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('flipped');
+                    }, index * 500); // Retraso de 500ms por cada carta
+                });
+
+                setTimeout(() => {
+                    document.getElementById('backButton').style.display = 'block';
+                }, 1500); 
+
+            }, 500);
+        }
+
+        // Función para regresar al estado inicial
+        function goBack() {
+            const cardContainer = document.getElementById('cardContainer');
+            cardContainer.innerHTML = '';
+            document.getElementById('backButton').style.display = 'none';
+        }
+
+        showCardReveal(3);
+    </script>
+
+</body>
+{% endblock %}

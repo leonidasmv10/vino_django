@@ -8,7 +8,7 @@
 <!-- Sección de Bienvenida -->
 <section class="bg-success text-white text-center py-5">
     <div class="container">
-        <h1>Bienvenido a Vinoteca Premium</h1>
+        <h1>Bienvenido a Vinoteca Premium {{ username }}</h1>
         <p>Descubre los mejores vinos, seleccionados con cariño, para ti.</p>
         <a href="#collection" class="btn btn-light btn-lg">Explorar Colección</a>
     </div>
@@ -77,8 +77,8 @@
         {% for wine in wines %}
         <div class="col">
             <div class="card shadow-sm border-0 rounded-3">
-                <img src="{{ wine.image.url }}" class="card-img-top" alt="{{ wine.name }}" 
-                     style="height: 200px; object-fit: cover; transition: transform 0.3s;">
+                <img src="{{ wine.image.url }}" class="card-img-top" alt="{{ wine.name }}"
+                    style="height: 200px; object-fit: cover; transition: transform 0.3s;">
                 <div class="card-body">
                     <h5 class="card-title">{{ wine.name }}</h5>
                     <p class="card-text" style="font-size: 0.9rem; color: #555;">{{ wine.description }}</p>

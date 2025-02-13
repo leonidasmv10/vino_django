@@ -9,7 +9,6 @@
     <h2>📚 Tu Colección de Vinos</h2>
     <div class="btn-group">
         <a href="{% url 'add_wine' %}" class="btn btn-outline-success">Añadir Vino</a>
-
     </div>
 </div>
 
@@ -18,57 +17,60 @@
     <div class="col-lg-3">
         <div class="mb-4">
             <h5>Filtros de Búsqueda</h5>
+
             <!-- Filtro por Categoría -->
             <div class="form-group">
                 <label for="categoria">Filtrar por Categoría</label>
-                <select class="form-control" id="categoria" onchange="applyFilters()">
-                    <option value="-1">Todas las Categorías</option>
-                    {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
+                <form method="GET" id="category-form">
+                    <select class="form-control" id="categoria" name="category" onchange="document.getElementById('category-form').submit();">
+                        <option value="-1" {% if category_filter == None or category_filter == "-1" %} selected{% endif %}>Todas las Categorías</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if category.id == category_filter %} selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                
             </div>
 
             <!-- Filtro por Poder (rango 0-100) -->
             <div class="form-group mt-3">
-                <label for="poderVino">Filtrar por puntuación del Vino (0-100)</label>
-                <input type="range" class="form-control-range" id="poderVino" min="0" max="100" value="0" step="1"
-                    onchange="applyFilters()">
-                <p class="text-muted">Poder: <span id="poderValor">0</span></p>
+                <label for="poderVino">Filtrar por Poder del Vino (1-12)</label>
+                <form method="GET" id="score-form">
+                    <input type="range" class="form-control-range" id="poderVino" name="score" min="1" max="12"
+                        value="{{ score_filter|default:1 }}" step="1"
+                        onchange="document.getElementById('score-form').submit();">
+                    <p class="text-muted">Rango: <span id="poderValor">{{ score_filter|default:1 }}</span> - 12</p>
+                </form>
             </div>
         </div>
     </div>
 
+    <!-- Vinos -->
     <div class="col-lg-9">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="vinosContainer">
             {% for item in wines_with_scores %}
-            <div class="col vino-card" id="vino{{ wine.id }}">
+            <div class="col vino-card" id="vino{{ item.wine.id }}">
                 <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
-
-                    <div class="total-score position-absolute top-0 end-0 m-2 p-2 
+                    <div class="total-score position-absolute top-0 end-0 m-2 p-2
                     {% if item.wine.category.id == 1 %}bg-danger text-white{% elif item.wine.category.id == 2 %}bg-light text-dark{% elif item.wine.category.id == 3 %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}
                     rounded-circle shadow-lg"
                         style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
-                        <strong> {{ item.total_score }} </strong>
+                        <strong>{{ item.total_score }}</strong>
                     </div>
-
-                    <!-- Colocamos el puntaje en la parte superior izquierda -->
-                    <div class="total-score position-absolute top-0 start-0 m-2 p-2 bg-dark text-white rounded-circle shadow-lg"
-                        style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem;">
+                    <div class="total-score position-absolute top-0 start-0 m-2 p-2 
+                    bg-dark text-white rounded-circle shadow-lg"
+                        style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
                         {% if item.wine.category.id == 1 %}
-                        🔥
+                            🔥
                         {% elif item.wine.category.id == 2 %}
-                        ❄️
+                            ❄️
                         {% elif item.wine.category.id == 3 %}
-                        💧
+                            💧
                         {% else %}
-                        ?
+                            Otro
                         {% endif %}
                     </div>
-
-
-
-                    <img src="{{ item.wine.image.url }}" class="card-img-top" alt="{{ item.wine.nombre }}"
+                    <img src="{{ item.wine.image.url }}" class="card-img-top" alt="{{ item.wine.name }}"
                         style="height: 120px; object-fit: cover;">
                     <div class="card-body p-2 text-center">
                         <h5 class="card-title text-truncate" style="font-size: 1rem;">{{ item.wine.name }}</h5>
@@ -83,7 +85,6 @@
                             <p class="mb-1 text-center" style="font-size: 1.2rem; font-weight: bold;">
                                 💲 {{ item.wine.price }}
                             </p>
-
                         </div>
                     </div>
                     <div class="card-footer p-2">
@@ -99,9 +100,7 @@
             {% endfor %}
         </div>
     </div>
-
 </div>
-
 
 <style>
     .vino-card {
@@ -130,7 +129,5 @@
         padding: 15px;
     }
 </style>
-
-
 
 {% endblock %}

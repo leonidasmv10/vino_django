@@ -14,27 +14,30 @@ class Wine(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="wines/", default="wines/img.jpg")
-    body = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    aroma = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    taste = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    tannins = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    acidity = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    sweetness = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
-    aging = models.IntegerField(default=50, choices=[(i, i) for i in range(1, 101)])
+    body = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    aroma = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    taste = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    tannins = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    acidity = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    sweetness = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
+    aging = models.IntegerField(default=2, choices=[(i, i) for i in range(1, 11)])
 
     def __str__(self):
         return self.name
 
     def total_score(self):
-        return round(
-            (
-                self.body
-                + self.aroma
-                + self.taste
-                + self.tannins
-                + self.acidity
-                + self.sweetness
-                + self.aging
-            )
-            / 7
-        )
+        # Calcula la puntuación promedio original
+        avg_score = (
+            self.body
+            + self.aroma
+            + self.taste
+            + self.tannins
+            + self.acidity
+            + self.sweetness
+            + self.aging
+        ) / 7
+
+        scaled_score = (avg_score / 10) * 12
+        scaled_score = max(1, min(12, scaled_score))
+
+        return round(scaled_score)

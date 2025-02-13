@@ -62,26 +62,3 @@ def ranking(request):
 def profile_view(request):
     profile = Profile.objects.get(user=request.user)
     return render(request, "users/profile.html", {"profile": profile})
-
-
-import requests
-from django.http import JsonResponse
-
-
-def enviar_mensaje(request):
-    if request.method == "POST":
-        url = "https://flask-test-9ao2.onrender.com/natural_language_processing/send_message"
-        payload = {
-            "message": "que es la ley de newton? y por que es tan famosa?",
-            "base64": "",
-        }
-        try:
-            response = requests.post(url, json=payload)
-            response.raise_for_status()  # Lanza una excepción para códigos de estado HTTP 4xx/5xx
-            data = response.json()
-            print(data)
-            return JsonResponse(data)
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({"error": str(e)}, status=500)
-    else:
-        return JsonResponse({"error": "Método no permitido"}, status=405)

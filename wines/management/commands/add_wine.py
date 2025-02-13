@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from wines.models import Wine, Category
 
 
-
 class Command(BaseCommand):
     help = "Agrega un vino automáticamente"
 
@@ -16,13 +15,13 @@ class Command(BaseCommand):
             description="Este es un vino de ejemplo.",
             price=25.99,
             category=category,
-            body=80,
-            aroma=70,
-            taste=85,
-            tannins=65,
-            acidity=75,
-            sweetness=50,
-            aging=60,
+            body=2,
+            aroma=2,
+            taste=2,
+            tannins=2,
+            acidity=2,
+            sweetness=2,
+            aging=2,
         )
 
         self.stdout.write(

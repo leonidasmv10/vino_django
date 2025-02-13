@@ -75,16 +75,45 @@ def delete_wine(request, wine_id):
 def store(request):
     return render(request, "wines/store.html")
 
+@login_required
+def generate_wine(request):
+    return render(request, "wines/generate_wine.html")
 
 @login_required
 def collection(request):
+    # Obtener el perfil del usuario
     profile = request.user.profile
-    wines = profile.wines.all()
+
+    # Obtener todas las categorías
     categories = Category.objects.all()
 
-    wines_with_scores = [
-        {"wine": wine, "total_score": wine.total_score()} for wine in wines
-    ]
+    # Obtener los filtros de la solicitud (si existen)
+    category_filter = request.GET.get("category", None)
+    score_filter = request.GET.get("score", None)
+
+    # Filtrar los vinos del usuario
+    wines = profile.wines.all()
+
+    # Filtrar por categoría si se selecciona una
+    if category_filter:
+        wines = wines.filter(category_id=category_filter)
+
+    # Crear la lista de vinos con sus puntuaciones
+    wines_with_scores = []
+    for wine in wines:
+        total_score = wine.total_score()
+        wines_with_scores.append({"wine": wine, "total_score": total_score})
+
+    # Filtrar por puntuación si se selecciona un rango
+    if score_filter:
+        wines_with_scores = [
+            item
+            for item in wines_with_scores
+            if item["total_score"] >= int(score_filter)
+        ]
+
+    # Pasar al template los vinos, categorías y los filtros actuales
+    print(category_filter)
 
     return render(
         request,
@@ -92,6 +121,8 @@ def collection(request):
         {
             "wines_with_scores": wines_with_scores,
             "categories": categories,
+            "category_filter": category_filter,
+            "score_filter": score_filter,
         },
     )
 
