@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from .models import Wine, Category
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 @login_required
@@ -75,9 +76,11 @@ def delete_wine(request, wine_id):
 def store(request):
     return render(request, "wines/store.html")
 
+
 @login_required
 def generate_wine(request):
     return render(request, "wines/generate_wine.html")
+
 
 @login_required
 def collection(request):

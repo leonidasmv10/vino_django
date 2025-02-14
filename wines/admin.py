@@ -10,7 +10,6 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("name",)
 
-    # Acción personalizada para saludar miembros
     def view_category(self, request, queryset):
         for category in queryset:
             self.message_user(request, f"Category: {category.name}!")
@@ -21,6 +20,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class WineAdmin(admin.ModelAdmin):
+
+    def view_total_score(self, request, queryset):
+        for wine in queryset:
+            self.message_user(request, f"{wine.name} tiene de poder {wine.total_score()} unidades!")
+
+    view_total_score.short_description = "Ver el poder de los vinos seleccionados"
+
+    actions = [view_total_score]
     form = WineAdminForm
 
 
