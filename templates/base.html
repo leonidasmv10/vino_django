@@ -40,12 +40,15 @@
                 <!-- Agregado para el iniciar sesión -->
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
+                    {% if not request.user.is_superuser %}
                     <div class="navbar-text text-light ms-3">
                         <a class="me-3 nav-link" href="{% url 'cart' %}">🛒 Carrito</a>
                     </div>
                     <div class="navbar-text text-light ms-3">
                         <span class="me-3">💰 Monedas: <span id="coins">{{ coins }}</span></span>
                     </div>
+                    {% endif %}
+
                     <!-- <a class="nav-link text-light" href="{% url 'profile' %}">👤 Perfil</a> -->
                     <form action="{% url 'logout' %}" method="POST" class="d-inline">
                         {% csrf_token %}
