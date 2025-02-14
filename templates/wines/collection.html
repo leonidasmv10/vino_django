@@ -101,19 +101,19 @@
                         </div>
                     </div>
                     <div class="card-footer p-2">
-                        {% if request.user.is_superuser %}
+
+
                         <div class="btn-group w-100">
+                            {% if request.user.is_superuser %}
                             <a href="{% url 'update_wine' item.wine.id %}"
-                                class="btn btn-sm btn-primary w-50">Editar</a>
+                                class="btn btn-sm btn-primary w-48 me-2 rounded">Editar</a>
 
-                        </div>
-                        {% endif %}
-
-                        <div class="btn-group w-100">
                             <a href="{% url 'delete_wine' item.wine.id %}"
                                 class="btn btn-sm btn-danger w-48 me-2 rounded">Eliminar</a>
+                            {% else %}
                             <a href="{% url 'add_to_cart' item.wine.id %}"
                                 class="btn btn-sm btn-primary w-48 rounded">Añadir al carrito</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
