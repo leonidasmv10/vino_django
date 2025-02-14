@@ -7,9 +7,11 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>📚 Tu Colección de Vinos</h2>
+    {% if request.user.is_superuser %}
     <div class="btn-group">
         <a href="{% url 'add_wine' %}" class="btn btn-outline-success">Añadir Vino</a>
     </div>
+    {% endif %}
 </div>
 
 <div class="row">
@@ -22,14 +24,17 @@
             <div class="form-group">
                 <label for="categoria">Filtrar por Categoría</label>
                 <form method="GET" id="category-form">
-                    <select class="form-control" id="categoria" name="category" onchange="document.getElementById('category-form').submit();">
-                        <option value="-1" {% if category_filter == None or category_filter == "-1" %} selected{% endif %}>Todas las Categorías</option>
+                    <select class="form-control" id="categoria" name="category"
+                        onchange="document.getElementById('category-form').submit();">
+                        <option value="-1" {% if category_filter == None or category_filter == "-1" %} selected{% endif %}>
+                            Todas las Categorías</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}" {% if category.id == category_filter %} selected{% endif %}>{{ category.name }}</option>
+                        <option value="{{ category.id }}" {% if category.id == category_filter %} selected{% endif %}>
+                            {{category.name }} </option>
                         {% endfor %}
                     </select>
                 </form>
-                
+
             </div>
 
             <!-- Filtro por Poder (rango 0-100) -->
@@ -61,13 +66,13 @@
                     bg-dark text-white rounded-circle shadow-lg"
                         style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
                         {% if item.wine.category.id == 1 %}
-                            🔥
+                        🔥
                         {% elif item.wine.category.id == 2 %}
-                            ❄️
+                        ❄️
                         {% elif item.wine.category.id == 3 %}
-                            💧
+                        💧
                         {% else %}
-                            Otro
+                        Otro
                         {% endif %}
                     </div>
                     <img src="{{ item.wine.image.url }}" class="card-img-top" alt="{{ item.wine.name }}"
@@ -88,12 +93,19 @@
                         </div>
                     </div>
                     <div class="card-footer p-2">
-                        <div class="btn-group w-100">
-                            <a href="{% url 'update_wine' item.wine.id %}"
-                                class="btn btn-sm btn-primary w-50">Editar</a>
-                            <a href="{% url 'delete_wine' item.wine.id %}"
+                        {% if request.user.is_superuser %}
+                            <div class="btn-group w-100">
+                                <a href="{% url 'update_wine' item.wine.id %}"
+                                    class="btn btn-sm btn-primary w-50">Editar</a>
+                                <a href="{% url 'delete_wine' item.wine.id %}"
+                                    class="btn btn-sm btn-danger w-50">Eliminar</a>
+                            </div>
+                        {% else %}
+                            <div class="btn-group w-100">
+                                <a href="{% url 'delete_wine' item.wine.id %}"
                                 class="btn btn-sm btn-danger w-50">Eliminar</a>
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

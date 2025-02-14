@@ -3,11 +3,14 @@ from .models import Wine, Category
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from users.models import Profile
+from django.contrib import messages
+import random
 
 
 @login_required
 def add_wine(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.is_superuser:
         name = request.POST["name"]
         description = request.POST["description"]
         category_id = request.POST["category"]
@@ -42,14 +45,13 @@ def update_wine(request, wine_id):
     wine = get_object_or_404(Wine, id=wine_id)
     categories = Category.objects.all()
 
-    if request.method == "POST":
-        # Aquí se procesa la actualización del vino
+    if request.method == "POST" and request.user.is_superuser:
+
         wine.name = request.POST["name"]
         wine.description = request.POST["description"]
         wine.price = request.POST["price"]
         wine.category = Category.objects.get(id=request.POST["category"])
 
-        # Si hay una nueva imagen, la actualizamos
         if "image" in request.FILES:
             wine.image = request.FILES["image"]
 
@@ -64,9 +66,13 @@ def update_wine(request, wine_id):
 @login_required
 def delete_wine(request, wine_id):
     wine = get_object_or_404(Wine, id=wine_id)
+    profile = get_object_or_404(Profile, user=request.user)
 
     if request.method == "POST":
-        wine.delete()
+        if request.user.is_superuser:
+            wine.delete()
+        else:
+            profile.wines.remove(wine)
         return redirect("collection")
 
     return render(request, "wines/delete_confirmation.html", {"wine": wine})
@@ -79,7 +85,20 @@ def store(request):
 
 @login_required
 def generate_wine(request):
-    return render(request, "wines/generate_wine.html")
+    profile = Profile.objects.get(user=request.user)
+    all_wines = list(
+        Wine.objects.exclude(id__in=profile.wines.all())
+    )  # Excluir los vinos que ya tiene
+
+   
+    if len(all_wines) < 3:
+        messages.warning(request, "No hay suficientes vinos disponibles para asignar.")
+        return redirect("store")
+   
+
+    selected_wines = random.sample(all_wines, 3)
+    profile.wines.add(*selected_wines)
+    return render(request, "wines/generate_wine.html", {"selected_wines": selected_wines})
 
 
 @login_required
@@ -95,7 +114,10 @@ def collection(request):
     score_filter = request.GET.get("score", None)
 
     # Filtrar los vinos del usuario
-    wines = profile.wines.all()
+    if request.user.is_superuser:
+        wines = Wine.objects.all()
+    else:
+        wines = profile.wines.all()
 
     # Filtrar por categoría si se selecciona una
     if category_filter:

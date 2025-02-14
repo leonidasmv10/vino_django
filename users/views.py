@@ -44,8 +44,8 @@ def register(request):
             password_hash = make_password(password)
             user = User.objects.create(username=username, password=password_hash)
             user.save()
-            Profile.objects.create(user=user)
-            messages.success(request, "¡Te has registrado con éxito!")
+            # Profile.objects.create(user=user)
+            # messages.success(request, "¡Te has registrado con éxito!")
             return redirect("login")
 
     else:

@@ -121,46 +121,44 @@
 
 <body>
     <h1 class="my-4">🎴 ¡Tus nuevos vinos! 🎴</h1>
-    <a href="{% url 'store' %}" id="backButton"  class="btn btn-primary mb-4">Regresar</a>
-    
+    <a href="{% url 'store' %}" id="backButton" class="btn btn-primary mb-4">Regresar</a>
+
     <div class="container">
         <div class="row g-4 justify-content-center card-container" id="cardContainer">
             <!-- Cartas generadas dinámicamente -->
         </div>
-        
+
     </div>
 
     <script>
-        // Esta función simula la obtención de vinos desde el backend
+        
+        const wines = [
+            {% for item in selected_wines %}
+            {
+                name: "{{ item.name }}",
+                rarity: "legendary",
+                stats: {
+                    body: {{ item.body }},
+                    aroma: {{ item.aroma }},
+                    taste: {{ item.taste }},
+                    tannins: {{ item.tannins }},
+                    acidity: {{ item.acidity }},
+                    sweetness: {{ item.sweetness }},
+                    aging: {{ item.aging }}
+                },
+                image: "{{ item.image.url }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+
+        console.log(wines); // Verificar que el arreglo se genera correctamente
+
         function generateRandomCard() {
-            const wines = [
-                {
-                    name: 'Vino Tinto Reserva',
-                    rarity: 'legendary',
-                    stats: { body: 90, aroma: 88, taste: 92, tannins: 85, acidity: 80, sweetness: 75, aging: 95 },
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
-                },
-                {
-                    name: 'Vino Blanco Chardonnay',
-                    rarity: 'epic',
-                    stats: { body: 80, aroma: 82, taste: 85, tannins: 70, acidity: 75, sweetness: 80, aging: 90 },
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
-                },
-                {
-                    name: 'Vino Rosado Tempranillo',
-                    rarity: 'rare',
-                    stats: { body: 75, aroma: 78, taste: 80, tannins: 65, acidity: 70, sweetness: 85, aging: 80 },
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
-                },
-                {
-                    name: 'Vino Merlot Clásico',
-                    rarity: 'common',
-                    stats: { body: 70, aroma: 68, taste: 72, tannins: 65, acidity: 60, sweetness: 65, aging: 70 },
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROh6jewThEFFO5IFAP_mB0Yg9pMU2kWxAbug&s'
-                }
-            ];
             return wines[Math.floor(Math.random() * wines.length)];
         }
+
+
 
         function createCardHTML(card, index) {
             return `
@@ -214,7 +212,7 @@
 
                 setTimeout(() => {
                     document.getElementById('backButton').style.display = 'block';
-                }, 1500); 
+                }, 1500);
 
             }, 500);
         }
