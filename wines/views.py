@@ -230,3 +230,28 @@ def add_to_cart(request, wine_id):
     response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))  # Cookie con duración de 30 días
 
     return response
+
+def remove_from_cart(request, wine_id):
+    try:
+        wine = Wine.objects.get(id=wine_id)  # Obtener el vino por su id
+    except Wine.DoesNotExist:
+        return HttpResponse("Vino no encontrado", status=404)
+
+    # Obtener el carrito actual desde las cookies (si existe)
+    cart = json.loads(request.COOKIES.get("cart", "{}"))
+    wine_id_str = str(wine_id)
+
+    # Verificar si el vino está en el carrito
+    if wine_id_str in cart:
+        # Si el vino está en el carrito, eliminarlo
+        del cart[wine_id_str]
+        messages.success(request, f"Vino '{wine.name}' eliminado del carrito.")
+    else:
+        # Si no está en el carrito, mostrar un mensaje de advertencia
+        messages.warning(request, f"El vino '{wine.name}' no está en el carrito.")
+
+    # Establecer la cookie con los datos actualizados del carrito
+    response = redirect("cart")  # Redirigir a la página del carrito
+    response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))  # Cookie con duración de 30 días
+
+    return response
