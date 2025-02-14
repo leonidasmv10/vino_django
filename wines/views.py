@@ -1,3 +1,4 @@
+import time
 from django.shortcuts import redirect, render
 from .models import Wine, Category
 from django.shortcuts import render, get_object_or_404
@@ -86,19 +87,28 @@ def store(request):
 @login_required
 def generate_wine(request):
     profile = Profile.objects.get(user=request.user)
-    all_wines = list(
-        Wine.objects.exclude(id__in=profile.wines.all())
-    )  # Excluir los vinos que ya tiene
+    all_wines = list(Wine.objects.exclude(id__in=profile.wines.all()))
 
-   
+    # cost_per_box = request.GET.get("cost", 10)
+    cost_per_box = 10
+    cost_per_box = int(cost_per_box)
+
+    print(profile.coins)
+
+    if profile.coins < cost_per_box:
+        messages.error(request, "No tienes suficientes monedas para generar cartas.")
+        return redirect("store")
+
     if len(all_wines) < 3:
         messages.warning(request, "No hay suficientes vinos disponibles para asignar.")
         return redirect("store")
-   
 
     selected_wines = random.sample(all_wines, 3)
     profile.wines.add(*selected_wines)
-    return render(request, "wines/generate_wine.html", {"selected_wines": selected_wines})
+    profile.subtract_coins(cost_per_box)
+    return render(
+        request, "wines/generate_wine.html", {"selected_wines": selected_wines}
+    )
 
 
 @login_required
@@ -138,7 +148,6 @@ def collection(request):
         ]
 
     # Pasar al template los vinos, categorías y los filtros actuales
-    print(category_filter)
 
     return render(
         request,
@@ -155,3 +164,69 @@ def collection(request):
 @login_required
 def cata(request):
     return render(request, "wines/cata.html")
+
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import Wine
+import json
+
+
+def get_wines_from_cart(request):
+    # Obtener los IDs de los vinos desde la cookie
+    cart_cookie = request.COOKIES.get("cart", "{}")
+    cart = json.loads(cart_cookie)
+
+    # Verifica si hay vinos en el carrito
+    if cart:
+        # Obtener los vinos basados en los IDs en el carrito
+        wine_ids = list(cart.keys())
+        cart_items = Wine.objects.filter(id__in=wine_ids)
+
+        # Calcular el precio total
+        total_price = sum(item.price * cart[str(item.id)] for item in cart_items)
+
+        return cart_items, total_price
+    else:
+        return [], 0
+
+
+def cart(request):
+    # Obtener los vinos desde el carrito
+    cart_items, total_price = get_wines_from_cart(request)
+
+    context = {
+        "cart_items": cart_items,
+        "total_price": total_price,
+    }
+    return render(request, "wines/cart.html", context)
+
+
+from django.http import HttpResponse
+import json
+from datetime import timedelta
+
+
+def add_to_cart(request, wine_id):
+    try:
+        wine = Wine.objects.get(id=wine_id)  # Obtener el vino por su id
+    except Wine.DoesNotExist:
+        return HttpResponse("Vino no encontrado", status=404)
+
+    # Obtener el carrito actual desde las cookies (si existe)
+    cart = json.loads(request.COOKIES.get("cart", "{}"))
+    wine_id_str = str(wine_id)  
+    # Verificar si el vino ya está en el carrito
+    if wine_id_str in cart:
+        # Si ya está en el carrito, mostrar un mensaje
+        messages.warning(request, f"El vino '{wine.name}' ya está en el carrito.")
+    else:
+        # Si no está, agregarlo al carrito y mostrar el mensaje de éxito
+        cart[wine_id_str] = 1
+        messages.success(request, f"Vino '{wine.name}' agregado al carrito.")
+
+    # Establecer la cookie con los datos actualizados del carrito
+    response = redirect("collection")  # Redirigir a la página de colección
+    response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))  # Cookie con duración de 30 días
+
+    return response
