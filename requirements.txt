@@ -9,3 +9,24 @@ sacremoses
 diffusers
 
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121/
+
+
+from diffusers import StableDiffusionPipeline
+import torch
+
+pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
+pipe.to("cuda")
+
+prompt = """
+Legado del Dragón Escarlata wine bottle. 
+A bottle of intense red wine with notes of wild blackberry and a smoky touch reminiscent of a dragon's breath atop a snowy mountain.
+ Robust body with an elegant tannic structure that lingers on the palate.
+  Cold color palette, muted colors, 8k.
+
+ """
+# Definir el tamaño de la imagen
+height = 256  # Altura de la imagen
+width = 256   # Anchura de la imagen
+
+# Generar la imagen con el tamaño ajustado
+image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
