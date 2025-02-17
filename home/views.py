@@ -4,6 +4,7 @@ from wines.models import Wine
 
 def index(request):
     wines = Wine.objects.all().order_by("-id")[:6]
+    
     return render(request, "home/index.html", {"wines": wines})
 
 
