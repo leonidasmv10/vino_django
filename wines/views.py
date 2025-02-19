@@ -15,8 +15,9 @@ import json
 import base64
 from io import BytesIO
 
-pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
-pipe.to("cuda")
+# pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
+# pipe.to("cuda")
+
 
 @csrf_exempt
 def generate_wine_image(request):
@@ -28,15 +29,14 @@ def generate_wine_image(request):
                 Cold color palette, muted colors, 8k.
         """
 
-        image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
+        # image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
 
-        
+        # image_io = BytesIO()
+        # image.save(image_io, format="PNG")
+        # image_base64 = base64.b64encode(image_io.getvalue()).decode("utf-8")
 
-        image_io = BytesIO()
-        image.save(image_io, format="PNG")
-        image_base64 = base64.b64encode(image_io.getvalue()).decode("utf-8")
+        return JsonResponse({"image_base64": ""})
 
-        return JsonResponse({"image_base64": image_base64})
 
 @csrf_exempt
 def generate_wine(request):
@@ -235,18 +235,24 @@ def get_wines_from_cart(request):
     cart_cookie = request.COOKIES.get("cart", "{}")
     cart = json.loads(cart_cookie)
 
-    # Verifica si hay vinos en el carrito
-    if cart:
-        # Obtener los vinos basados en los IDs en el carrito
-        wine_ids = list(cart.keys())
+    # Verifica si hay vinos en el carrito para el usuario logueado
+    user_id = str(request.user.id)  # Convertir el ID del usuario a string
+
+    # Verificar si el usuario tiene vinos en el carrito
+    if user_id in cart:
+        # Obtener los IDs de los vinos que están en el carrito del usuario
+        wine_ids = cart[user_id]
+
+        # Obtener los objetos de vino correspondientes a esos IDs
         cart_items = Wine.objects.filter(id__in=wine_ids)
 
         # Calcular el precio total
-        total_price = sum(item.price * cart[str(item.id)] for item in cart_items)
+        total_price = sum(item.price for item in cart_items)
 
         return cart_items, total_price
     else:
         return [], 0
+
 
 
 def cart(request):
@@ -274,13 +280,22 @@ def add_to_cart(request, wine_id):
     # Obtener el carrito actual desde las cookies (si existe)
     cart = json.loads(request.COOKIES.get("cart", "{}"))
     wine_id_str = str(wine_id)
-    # Verificar si el vino ya está en el carrito
-    if wine_id_str in cart:
-        # Si ya está en el carrito, mostrar un mensaje
-        messages.warning(request, f"El vino '{wine.name}' ya está en el carrito.")
+
+    # Verificar si el usuario tiene vinos en el carrito
+    user_id = str(request.user.id)  # Convertir el id del usuario a string para usarlo como clave
+
+    # Si el usuario ya tiene vinos en su carrito
+    if user_id in cart:
+        # Si el vino ya está en la lista del usuario, mostrar un mensaje
+        if wine_id_str in cart[user_id]:
+            messages.warning(request, f"El vino '{wine.name}' ya está en el carrito.")
+        else:
+            # Añadir el vino a la lista de vinos del usuario (sin duplicados)
+            cart[user_id].append(wine_id_str)
+            messages.success(request, f"Vino '{wine.name}' agregado al carrito.")
     else:
-        # Si no está, agregarlo al carrito y mostrar el mensaje de éxito
-        cart[wine_id_str] = 1
+        # Si el usuario no tiene vinos en el carrito, crear una nueva lista con el vino
+        cart[user_id] = [wine_id_str]
         messages.success(request, f"Vino '{wine.name}' agregado al carrito.")
 
     # Establecer la cookie con los datos actualizados del carrito
