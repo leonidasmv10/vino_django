@@ -42,6 +42,41 @@
             </select>
         </div>
 
+        <!-- Atributos del Vino -->
+        <div class="form-group mt-3">
+            <label>Atributos:</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="cuerpo">⚔️ Cuerpo:</label>
+                    <input type="number" class="form-control" id="cuerpo" name="cuerpo" min="1" max="10" value="{{ wine.body }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="aroma">🌿 Aroma:</label>
+                    <input type="number" class="form-control" id="aroma" name="aroma" min="1" max="10" value="{{ wine.aroma }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="sabor">🍷 Sabor:</label>
+                    <input type="number" class="form-control" id="sabor" name="sabor" min="1" max="10" value="5">
+                </div>
+                <div class="col-md-6">
+                    <label for="taninos">🍇 Taninos:</label>
+                    <input type="number" class="form-control" id="taninos" name="taninos" min="1" max="10" value="5">
+                </div>
+                <div class="col-md-6">
+                    <label for="acidez">🍋 Acidez:</label>
+                    <input type="number" class="form-control" id="acidez" name="acidez" min="1" max="10" value="5">
+                </div>
+                <div class="col-md-6">
+                    <label for="dulzura">🍭 Dulzura:</label>
+                    <input type="number" class="form-control" id="dulzura" name="dulzura" min="1" max="10" value="5">
+                </div>
+                <div class="col-md-6">
+                    <label for="vintage">🏺 Vintage:</label>
+                    <input type="number" class="form-control" id="vintage" name="vintage" min="1" max="10" value="5">
+                </div>
+            </div>
+        </div>
+
         <!-- Imagen del Vino -->
         <div class="form-group mb-3">
             <label for="image">Imagen del Vino:</label>

@@ -7,6 +7,64 @@ from django.http import JsonResponse
 from users.models import Profile
 from django.contrib import messages
 import random
+from diffusers import StableDiffusionXLPipeline
+import torch
+from django.views.decorators.csrf import csrf_exempt
+from .services import generate_text
+import json
+import base64
+from io import BytesIO
+
+pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
+pipe.to("cuda")
+
+@csrf_exempt
+def generate_wine_image(request):
+    if request.method == "POST":
+        prompt = """
+                Legado del Dragón Escarlata wine bottle. 
+                A bottle of intense red wine with notes of wild blackberry and a smoky touch reminiscent of a dragon's breath atop a snowy mountain.
+                Robust body with an elegant tannic structure that lingers on the palate.
+                Cold color palette, muted colors, 8k.
+        """
+
+        image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
+
+        
+
+        image_io = BytesIO()
+        image.save(image_io, format="PNG")
+        image_base64 = base64.b64encode(image_io.getvalue()).decode("utf-8")
+
+        return JsonResponse({"image_base64": image_base64})
+
+@csrf_exempt
+def generate_wine(request):
+    if request.method == "POST":
+        prompt = """
+        Genera un vino aleatorio y responde con un JSON que incluya estas propiedades:
+        {
+            "name": "Nombre del vino",
+            "description": "Descripción del vino",
+            "category": 1,
+            "body": 5,
+            "aroma": 6,
+            "taste": 7,
+            "tannins": 5,
+            "acidity": 4,
+            "sweetness": 3,
+            "aging": 8,
+            "price": 25.99
+        }
+        """
+
+        wine_generate = generate_text(prompt)
+        clean_json_string = (
+            wine_generate.replace("```json", "").replace("```", "").strip()
+        )
+        wine_data = json.loads(clean_json_string)
+
+        return JsonResponse(wine_data)
 
 
 @login_required
@@ -85,7 +143,7 @@ def store(request):
 
 
 @login_required
-def generate_wine(request):
+def buy_wines(request):
     profile = Profile.objects.get(user=request.user)
     all_wines = list(Wine.objects.exclude(id__in=profile.wines.all()))
 
@@ -215,7 +273,7 @@ def add_to_cart(request, wine_id):
 
     # Obtener el carrito actual desde las cookies (si existe)
     cart = json.loads(request.COOKIES.get("cart", "{}"))
-    wine_id_str = str(wine_id)  
+    wine_id_str = str(wine_id)
     # Verificar si el vino ya está en el carrito
     if wine_id_str in cart:
         # Si ya está en el carrito, mostrar un mensaje
@@ -227,9 +285,12 @@ def add_to_cart(request, wine_id):
 
     # Establecer la cookie con los datos actualizados del carrito
     response = redirect("collection")  # Redirigir a la página de colección
-    response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))  # Cookie con duración de 30 días
+    response.set_cookie(
+        "cart", json.dumps(cart), max_age=timedelta(days=30)
+    )  # Cookie con duración de 30 días
 
     return response
+
 
 def remove_from_cart(request, wine_id):
     try:
@@ -252,6 +313,8 @@ def remove_from_cart(request, wine_id):
 
     # Establecer la cookie con los datos actualizados del carrito
     response = redirect("cart")  # Redirigir a la página del carrito
-    response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))  # Cookie con duración de 30 días
+    response.set_cookie(
+        "cart", json.dumps(cart), max_age=timedelta(days=30)
+    )  # Cookie con duración de 30 días
 
     return response
