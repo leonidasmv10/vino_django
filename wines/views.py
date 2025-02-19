@@ -314,17 +314,28 @@ def remove_from_cart(request, wine_id):
         return HttpResponse("Vino no encontrado", status=404)
 
     # Obtener el carrito actual desde las cookies (si existe)
-    cart = json.loads(request.COOKIES.get("cart", "{}"))
+    cart_cookie = request.COOKIES.get("cart", "{}")
+    cart = json.loads(cart_cookie)
     wine_id_str = str(wine_id)
+    
+    # Obtener el ID del usuario como cadena
+    user_id = str(request.user.id)
 
-    # Verificar si el vino está en el carrito
-    if wine_id_str in cart:
-        # Si el vino está en el carrito, eliminarlo
-        del cart[wine_id_str]
-        messages.success(request, f"Vino '{wine.name}' eliminado del carrito.")
+    # Verificar si el usuario tiene vinos en el carrito
+    if user_id in cart:
+        # Si el vino está en la lista del carrito del usuario
+        if wine_id_str in cart[user_id]:
+            cart[user_id].remove(wine_id_str)  # Eliminar el vino de la lista
+            # Si la lista queda vacía, eliminamos la clave del carrito
+            if not cart[user_id]:
+                del cart[user_id]
+            messages.success(request, f"Vino '{wine.name}' eliminado del carrito.")
+        else:
+            # Si el vino no está en la lista, mostrar un mensaje de advertencia
+            messages.warning(request, f"El vino '{wine.name}' no está en tu carrito.")
     else:
-        # Si no está en el carrito, mostrar un mensaje de advertencia
-        messages.warning(request, f"El vino '{wine.name}' no está en el carrito.")
+        # Si el usuario no tiene un carrito, mostrar un mensaje
+        messages.warning(request, "Tu carrito está vacío.")
 
     # Establecer la cookie con los datos actualizados del carrito
     response = redirect("cart")  # Redirigir a la página del carrito
