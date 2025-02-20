@@ -77,23 +77,61 @@
         object-fit: cover;
     }
 
-    .rarity-legendary {
-        animation: legendary-glow 2s infinite;
+    .rarity-fire {
+        animation: fire-glow 2s infinite;
     }
 
-    @keyframes legendary-glow {
+    @keyframes fire-glow {
         0% {
-            box-shadow: 0 0 5px #ffd700;
+            box-shadow: 0 0 5px #d73e3e;
         }
 
         50% {
-            box-shadow: 0 0 20px #ffd700;
+            box-shadow: 0 0 20px #a9290d;
         }
 
         100% {
-            box-shadow: 0 0 5px #ffd700;
+            box-shadow: 0 0 5px #ff0000;
         }
     }
+
+    .rarity-water {
+        animation: water-glow 2s infinite;
+    }
+
+    @keyframes water-glow {
+        0% {
+            box-shadow: 0 0 5px #2d6ac6;
+        }
+
+        50% {
+            box-shadow: 0 0 20px #1d2fd1;
+        }
+
+        100% {
+            box-shadow: 0 0 5px #002aff;
+        }
+    }
+
+    .rarity-snow {
+        animation: snow-glow 2s infinite;
+    }
+
+    @keyframes snow-glow {
+        0% {
+            box-shadow: 0 0 5px #c1c8d3;
+        }
+
+        50% {
+            box-shadow: 0 0 20px #9d9fae;
+        }
+
+        100% {
+            box-shadow: 0 0 5px #e30389;
+        }
+    }
+
+    
 
     .card-container {
         display: flex;
@@ -146,18 +184,20 @@
                     sweetness: {{ item.sweetness }},
                     aging: {{ item.aging }}
                 },
-                image: "{{ item.image.url }}"
+                image: "{{ item.image.url }}",
+                category_id: {{ item.category_id }}
             }{% if not forloop.last %},{% endif %}
             {% endfor %}
         ];
 
+        const rarityClasses = {
+            1: 'rarity-fire',
+            2: 'rarity-water',
+            3: 'rarity-snow'
+        };
+
 
         console.log(wines); // Verificar que el arreglo se genera correctamente
-
-        function generateRandomCard() {
-            return wines[Math.floor(Math.random() * wines.length)];
-        }
-
 
 
         function createCardHTML(card, index) {
@@ -169,7 +209,7 @@
                                 ?
                             </div>
                             <div class="card-back">
-                                <div class="card h-auto ${card.rarity === 'legendary' ? 'rarity-legendary' : ''}">
+                                <div class="card h-auto ${rarityClasses[card.category_id]}">
                                     <img src="${card.image}" class="card-img-top" alt="${card.name}">
                                     <div class="card-body">
                                         <h5 class="card-title">${card.name}</h5>
@@ -195,7 +235,7 @@
 
             let cards = [];
             for (let i = 0; i < numCards; i++) {
-                const card = generateRandomCard();
+                const card = wines[i];
                 const cardHTML = createCardHTML(card, i);
                 cards.push(cardHTML);
             }
@@ -218,11 +258,11 @@
         }
 
         // Función para regresar al estado inicial
-        function goBack() {
-            const cardContainer = document.getElementById('cardContainer');
-            cardContainer.innerHTML = '';
-            document.getElementById('backButton').style.display = 'none';
-        }
+        // function goBack() {
+        //     const cardContainer = document.getElementById('cardContainer');
+        //     cardContainer.innerHTML = '';
+        //     document.getElementById('backButton').style.display = 'none';
+        // }
 
         showCardReveal(3);
     </script>

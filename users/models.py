@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    coins = models.IntegerField(default=50)
+    coins = models.IntegerField(default=5000)
     victories = models.IntegerField(default=0)
     wines = models.ManyToManyField("wines.Wine", blank=True) # Relación muchos a muchos
 

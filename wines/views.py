@@ -316,8 +316,6 @@ def buy_wines(request):
     cost_per_box = 10
     cost_per_box = int(cost_per_box)
 
-    print(profile.coins)
-
     if profile.coins < cost_per_box:
         messages.error(request, "No tienes suficientes monedas para generar cartas.")
         return redirect("store")
