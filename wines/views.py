@@ -134,7 +134,8 @@ def generate_wine_image(request):
         # **Generar la nueva imagen con IA**
         prompt = f"""
                 Wine name: {name}
-                Visual elements: A bottle of {category.name} wine, a glass of the same wine, realistic colors, showcasing the wine's unique characteristics. The bottle should always be included in the scene. 8k resolution, elegant and detailed.
+                Category: {category.name}
+                Visual elements: A bottle of wine, a glass of the same wine, realistic colors, showcasing the wine's unique characteristics. The bottle should always be included in the scene. 8k resolution, elegant and detailed.
         """
 
         print(prompt)
