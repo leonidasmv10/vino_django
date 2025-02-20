@@ -7,56 +7,179 @@ from django.http import JsonResponse
 from users.models import Profile
 from django.contrib import messages
 import random
-from diffusers import StableDiffusionXLPipeline
+from diffusers import StableDiffusionXLPipeline, StableDiffusionPipeline
 import torch
 from django.views.decorators.csrf import csrf_exempt
 from .services import generate_text
 import json
 import base64
 from io import BytesIO
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
+from datetime import timedelta
+import uuid
+from django.conf import settings
+import os
+
+
+prompt_normal = f"""
+responde siempre con una matriz JSON que incluya las siguientes propiedades:
+
+- "name" (texto): Un nombre suave, que no cause intimidación y débil, creativo de entre 25 y 35 caracteres.
+- "description" (texto): Una descripción ingeniosa y evocadora.
+- "category" (entero):
+  - 1 = Tinto (Fuego)
+  - 2 = Blanco (Nieve)
+  - 3 = Rosado (Agua)
+- "body", "aroma", "taste", "tannins", "acidity", "sweetness", "aging" (enteros del 1 al 5): Valores sensoriales del vino.
+- "price" (decimal): Se calcula en función de las propiedades sensoriales.
+- "total_score" (promedio de body, aroma, taste, tannins, acidity, sweetness y aging).
+
+### **Reglas adicionales para asegurar la distribución correcta:**
+1. **El nombre del vino debe reflejar su stats**:   
+2. **El `total_score` debe estar forzado dentro de su rango, sin excepciones.**  
+3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
+4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
+
+Sé altamente creativo en la generación del nombre y la descripción.
+"""
+
+prompt_premium = f"""
+responde siempre con una matriz JSON que incluya las siguientes propiedades:
+
+- "name" (texto): Un nombre fuerte, creativo de entre 25 y 35 caracteres.
+- "description" (texto): Una descripción ingeniosa y evocadora.
+- "category" (entero): 
+  - 1 = Tinto (Fuego)
+  - 2 = Blanco (Nieve)
+  - 3 = Rosado (Agua)
+- "body", "aroma", "taste", "tannins", "acidity", "sweetness", "aging" (enteros del 5 al 8): Valores sensoriales del vino.
+- "price" (decimal): Se calcula en función de las propiedades sensoriales.
+- "total_score" (promedio de body, aroma, taste, tannins, acidity, sweetness y aging).
+
+### **Reglas adicionales para asegurar la distribución correcta:**
+1. **El nombre del vino debe reflejar su stats**:   
+2. **El `total_score` debe estar forzado dentro de su rango, sin excepciones.**  
+3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
+4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
+
+Sé altamente creativo en la generación del nombre y la descripción.
+"""
+
+
+prompt_legendario = f"""
+responde siempre con una matriz JSON que incluya las siguientes propiedades:
+
+- "name" (texto): Un nombre muy fuerte y muy intimidante, creativo de entre 25 y 35 caracteres.
+- "description" (texto): Una descripción ingeniosa y evocadora.
+- "category" (entero):
+  - 1 = Tinto (Fuego)
+  - 2 = Blanco (Nieve)
+  - 3 = Rosado (Agua)
+- "body", "aroma", "taste", "tannins", "acidity", "sweetness", "aging" (enteros del 8 al 10): Valores sensoriales del vino.
+- "price" (decimal): Se calcula en función de las propiedades sensoriales.
+- "total_score" (promedio de body, aroma, taste, tannins, acidity, sweetness y aging).
+
+### **Reglas adicionales para asegurar la distribución correcta:**
+1. **El nombre del vino debe reflejar su stats**:   
+2. **El `total_score` debe estar forzado dentro de su rango, sin excepciones.**  
+3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
+4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
+
+Sé altamente creativo en la generación del nombre y la descripción.
+"""
 
 # pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
-# pipe.to("cuda")
+pipe = StableDiffusionPipeline.from_pretrained(
+    "dreamlike-art/dreamlike-anime-1.0", torch_dtype=torch.float16, use_safetensors=True
+)
+
+# pipe = StableDiffusionPipeline.from_pretrained(
+#     "dreamlike-art/dreamlike-diffusion-1.0", torch_dtype=torch.float16, use_safetensors=True
+# )
+
+
+pipe.to("cuda" if torch.cuda.is_available() else "cpu")
+
+# Ruta donde se guardarán las imágenes
+IMAGE_FOLDER = os.path.join(settings.MEDIA_ROOT, "generated_wine_images")
+
+# Asegurar que la carpeta existe
+os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 
 @csrf_exempt
 def generate_wine_image(request):
     if request.method == "POST":
-        prompt = """
-                Legado del Dragón Escarlata wine bottle. 
-                A bottle of intense red wine with notes of wild blackberry and a smoky touch reminiscent of a dragon's breath atop a snowy mountain.
-                Robust body with an elegant tannic structure that lingers on the palate.
-                Cold color palette, muted colors, 8k.
+
+        data = json.loads(request.body)  # Parseamos el JSON del cuerpo de la solicitud
+
+        name = data["name"]
+        description = data["description"]
+        category_id = data["category"]
+
+        # Buscar la categoría en la base de datos
+        category = Category.objects.get(id=category_id)
+
+        # prompt = """{wines.description}. Cold color palette, muted colors, 8k."""
+
+        # **Eliminar imagen anterior**
+        existing_images = os.listdir(IMAGE_FOLDER)
+        for img_file in existing_images:
+            os.remove(os.path.join(IMAGE_FOLDER, img_file))
+
+        name = data["name"]
+        description = data["description"]
+        category_id = data["category"]
+        # **Generar la nueva imagen con IA**
+        prompt = f"""
+                Wine name: {name}
+                Visual elements: A bottle of {category.name} wine, a glass of the same wine, realistic colors, showcasing the wine's unique characteristics. The bottle should always be included in the scene. 8k resolution, elegant and detailed.
         """
 
-        # image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
+        print(prompt)
+        image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
 
-        # image_io = BytesIO()
-        # image.save(image_io, format="PNG")
-        # image_base64 = base64.b64encode(image_io.getvalue()).decode("utf-8")
+        # **Guardar la imagen en el servidor**
+        image_name = f"{uuid.uuid4().hex}.png"
+        image_path = os.path.join(IMAGE_FOLDER, image_name)
+        image.save(image_path, format="PNG")
 
-        return JsonResponse({"image_base64": ""})
+        # **Obtener la URL de la imagen**
+        image_url = f"{settings.MEDIA_URL}generated_wine_images/{image_name}"
+
+        return JsonResponse({"image_url": image_url})
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)
 
 
 @csrf_exempt
 def generate_wine(request):
     if request.method == "POST":
-        prompt = """
-        Genera un vino aleatorio y responde con un JSON que incluya estas propiedades:
-        {
-            "name": "Nombre del vino",
-            "description": "Descripción del vino",
-            "category": 1,
-            "body": 5,
-            "aroma": 6,
-            "taste": 7,
-            "tannins": 5,
-            "acidity": 4,
-            "sweetness": 3,
-            "aging": 8,
-            "price": 25.99
-        }
-        """
+        data = json.loads(request.body)  # Parseamos el JSON del cuerpo de la solicitud
+        prompt = ""
+        type_card = data["type_card"]
+        category_id = data["category_id"]
+
+        category = Category.objects.get(id=category_id)
+
+        prompt = ""
+
+        # Genera un vino super legendario aleatorio y
+
+        # print(type_card)
+        if type_card == "1":
+            prompt = f"""
+                Genera un vino {category.name} aleatorio y {prompt_normal} 
+            """
+        elif type_card == "2":
+            prompt = f"""
+                Genera un vino {category.name} premium aleatorio y {prompt_premium} 
+            """
+        else:
+            prompt = f"""
+                Genera un vino {category.name} super legendario aleatorio y {prompt_legendario} 
+            """
 
         wine_generate = generate_text(prompt)
         clean_json_string = (
@@ -67,6 +190,10 @@ def generate_wine(request):
         return JsonResponse(wine_data)
 
 
+import requests
+from django.core.files.base import ContentFile
+
+
 @login_required
 def add_wine(request):
     if request.method == "POST" and request.user.is_superuser:
@@ -74,15 +201,45 @@ def add_wine(request):
         description = request.POST["description"]
         category_id = request.POST["category"]
         price = request.POST["price"]
-        image = request.FILES["image"]
+        image_url = request.POST["image_url_frontend"]
+        cuerpo = request.POST["cuerpo"]
+        aroma = request.POST["aroma"]
+        sabor = request.POST["sabor"]
+        taninos = request.POST["taninos"]
+        acidez = request.POST["acidez"]
+        dulzura = request.POST["dulzura"]
+        vintage = request.POST["vintage"]
+
         category = Category.objects.get(id=category_id)
+
+        # Si la URL de la imagen es relativa, agregar la base de la URL
+        if image_url.startswith("/media/"):
+            image_url = f"http://127.0.0.1:8000{image_url}"
+
+        # Descargar la imagen generada desde la URL
+        response = requests.get(image_url)
+        if response.status_code != 200:
+            return JsonResponse({"error": "No se pudo descargar la imagen"}, status=400)
+
+        # Crear un nombre de archivo único
+        image_name = os.path.basename(image_url) or f"wine_{name}.png"
+        image_content = ContentFile(response.content, name=image_name)
+
         wine = Wine(
             name=name,
             description=description,
             category=category,
             price=price,
-            image=image,
+            # image=image,
+            body=cuerpo,
+            aroma=aroma,
+            taste=sabor,
+            tannins=taninos,
+            acidity=acidez,
+            sweetness=dulzura,
+            aging=vintage,
         )
+        wine.image.save(image_name, image_content)  # Guardar en `ImageField`
         wine.save()
         profile = request.user.profile
         profile.wines.add(wine)
@@ -110,6 +267,13 @@ def update_wine(request, wine_id):
         wine.description = request.POST["description"]
         wine.price = request.POST["price"]
         wine.category = Category.objects.get(id=request.POST["category"])
+        wine.body = request.POST["cuerpo"]
+        wine.aroma = request.POST["aroma"]
+        wine.taste = request.POST["sabor"]
+        wine.tannins = request.POST["taninos"]
+        wine.acidity = request.POST["acidez"]
+        wine.sweetness = request.POST["dulzura"]
+        wine.aging = request.POST["vintage"]
 
         if "image" in request.FILES:
             wine.image = request.FILES["image"]
@@ -224,12 +388,6 @@ def cata(request):
     return render(request, "wines/cata.html")
 
 
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from .models import Wine
-import json
-
-
 def get_wines_from_cart(request):
     # Obtener los IDs de los vinos desde la cookie
     cart_cookie = request.COOKIES.get("cart", "{}")
@@ -254,7 +412,6 @@ def get_wines_from_cart(request):
         return [], 0
 
 
-
 def cart(request):
     # Obtener los vinos desde el carrito
     cart_items, total_price = get_wines_from_cart(request)
@@ -264,11 +421,6 @@ def cart(request):
         "total_price": total_price,
     }
     return render(request, "wines/cart.html", context)
-
-
-from django.http import HttpResponse
-import json
-from datetime import timedelta
 
 
 def add_to_cart(request, wine_id):
@@ -282,7 +434,9 @@ def add_to_cart(request, wine_id):
     wine_id_str = str(wine_id)
 
     # Verificar si el usuario tiene vinos en el carrito
-    user_id = str(request.user.id)  # Convertir el id del usuario a string para usarlo como clave
+    user_id = str(
+        request.user.id
+    )  # Convertir el id del usuario a string para usarlo como clave
 
     # Si el usuario ya tiene vinos en su carrito
     if user_id in cart:
@@ -317,7 +471,7 @@ def remove_from_cart(request, wine_id):
     cart_cookie = request.COOKIES.get("cart", "{}")
     cart = json.loads(cart_cookie)
     wine_id_str = str(wine_id)
-    
+
     # Obtener el ID del usuario como cadena
     user_id = str(request.user.id)
 

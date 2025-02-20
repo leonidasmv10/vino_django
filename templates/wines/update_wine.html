@@ -56,23 +56,23 @@
                 </div>
                 <div class="col-md-6">
                     <label for="sabor">🍷 Sabor:</label>
-                    <input type="number" class="form-control" id="sabor" name="sabor" min="1" max="10" value="5">
+                    <input type="number" class="form-control" id="sabor" name="sabor" min="1" max="10" value="{{ wine.taste }}">
                 </div>
                 <div class="col-md-6">
                     <label for="taninos">🍇 Taninos:</label>
-                    <input type="number" class="form-control" id="taninos" name="taninos" min="1" max="10" value="5">
+                    <input type="number" class="form-control" id="taninos" name="taninos" min="1" max="10" value="{{ wine.tannins }}">
                 </div>
                 <div class="col-md-6">
                     <label for="acidez">🍋 Acidez:</label>
-                    <input type="number" class="form-control" id="acidez" name="acidez" min="1" max="10" value="5">
+                    <input type="number" class="form-control" id="acidez" name="acidez" min="1" max="10" value="{{ wine.acidity }}">
                 </div>
                 <div class="col-md-6">
                     <label for="dulzura">🍭 Dulzura:</label>
-                    <input type="number" class="form-control" id="dulzura" name="dulzura" min="1" max="10" value="5">
+                    <input type="number" class="form-control" id="dulzura" name="dulzura" min="1" max="10" value="{{ wine.sweetness }}">
                 </div>
                 <div class="col-md-6">
                     <label for="vintage">🏺 Vintage:</label>
-                    <input type="number" class="form-control" id="vintage" name="vintage" min="1" max="10" value="5">
+                    <input type="number" class="form-control" id="vintage" name="vintage" min="1" max="10" value="{{ wine.aging }}">
                 </div>
             </div>
         </div>
