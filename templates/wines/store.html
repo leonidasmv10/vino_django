@@ -8,6 +8,13 @@
 <!-- Sección de Tienda -->
 <section id="store" class="container my-5">
     <h2 class="text-center mb-4">🏪 Tienda de Vinos</h2>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-3">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
 
     <!-- Tarjetas de Vinos -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
