@@ -32,15 +32,16 @@
             <div class="form-group">
                 <label for="categoria">Filtrar por Categoría</label>
                 <form method="GET" id="category-form">
-                    <select class="form-control"  name="category" onchange="document.getElementById('category-form').submit();">
+                    <select class="form-control" name="category"
+                        onchange="document.getElementById('category-form').submit();">
                         <option value="" {% if not category_filter %}selected{% endif %}>Todas las categorías</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}" {% if category.id|stringformat:"s" == category_filter %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
+                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == category_filter %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
                         {% endfor %}
                     </select>
-                </form>  
+                </form>
 
             </div>
 
@@ -148,6 +149,48 @@
         padding: 15px;
     }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categoryForm = document.getElementById("category-form");
+        const scoreForm = document.getElementById("score-form");
+
+        function updateFilters() {
+            let params = new URLSearchParams(window.location.search);
+
+            // Obtener valores actuales de los filtros
+            let selectedCategory = categoryForm.querySelector("select[name='category']").value;
+            let selectedScore = scoreForm.querySelector("input[name='score']").value;
+
+            // Actualizar parámetros en la URL
+            if (selectedCategory) {
+                params.set("category", selectedCategory);
+            } else {
+                params.delete("category");
+            }
+
+            if (selectedScore) {
+                params.set("score", selectedScore);
+            } else {
+                params.delete("score");
+            }
+
+            // Redirigir con los parámetros actualizados
+            window.location.href = "?" + params.toString();
+        }
+
+        // Evento para el cambio de categoría
+        categoryForm.querySelector("select[name='category']").addEventListener("change", function () {
+            updateFilters();
+        });
+
+        // Evento para el cambio de score
+        scoreForm.querySelector("input[name='score']").addEventListener("input", function () {
+            updateFilters();
+        });
+    });
+</script>
+
 
 
 

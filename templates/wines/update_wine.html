@@ -10,36 +10,31 @@
     <form method="POST" action="{% url 'update_wine' wine.id %}" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <!-- Nombre del Vino -->
+        <!-- Nombre del Vino (Solo lectura) -->
         <div class="form-group mb-3">
             <label for="name">Nombre del Vino:</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ wine.name }}" required>
+            <input type="text" class="form-control" id="name" name="name" value="{{ wine.name }}" readonly>
+            <input type="hidden" name="name" value="{{ wine.name }}">
         </div>
 
-        <!-- Descripción -->
+        <!-- Descripción (Solo lectura) -->
         <div class="form-group mb-3">
             <label for="description">Descripción:</label>
-            <textarea class="form-control" id="description" name="description" rows="3"
-                required>{{ wine.description }}</textarea>
+            <textarea class="form-control" id="description" name="description" rows="3" readonly>{{ wine.description }}</textarea>
+            <input type="hidden" name="description" value="{{ wine.description }}">
         </div>
 
         <!-- Precio -->
         <div class="form-group mb-3">
             <label for="price">Precio (EU):</label>
-            <input type="number" class="form-control" id="price" name="price" value="{{ wine.price }}" step="0.01"
-                required>
+            <input type="number" class="form-control" id="price" name="price" value="{{ wine.price }}" step="0.01" required>
         </div>
 
-        <!-- Categoría -->
+        <!-- Categoría (Solo lectura) -->
         <div class="form-group mb-3">
             <label for="category">Categoría:</label>
-            <select class="form-control" id="category" name="category" required>
-                {% for category in categories %}
-                <option value="{{ category.id }}" {% if category.id == wine.category.id %}selected{% endif %}>
-                    {{ category.name }}
-                </option>
-                {% endfor %}
-            </select>
+            <input type="text" class="form-control" id="category" name="category" value="{{ wine.category.name }}" readonly>
+            <input type="hidden" name="category" value="{{ wine.category.id }}">
         </div>
 
         <!-- Atributos del Vino -->
@@ -80,8 +75,6 @@
         <!-- Imagen del Vino -->
         <div class="form-group mb-3">
             <label for="image">Imagen del Vino:</label>
-            <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
-            <small class="text-muted">Sube una imagen del vino en formato JPG, PNG o GIF.</small>
             {% if wine.image %}
             <div class="mt-3">
                 <img src="{{ wine.image.url }}" alt="Imagen del vino" class="img-fluid" style="max-width: 200px;">
@@ -95,25 +88,5 @@
         <button type="submit" class="btn btn-success mt-4">Actualizar Vino</button>
     </form>
     <br>
-
 </div>
-
-<script>
-    function previewImage() {
-        const file = document.getElementById("image").files[0];
-        const preview = document.getElementById("imagePreview");
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.classList.remove("d-none");
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.src = "{{ wine.image.url }}";
-        }
-    }
-</script>
-
 {% endblock %}
