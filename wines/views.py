@@ -496,3 +496,41 @@ def remove_from_cart(request, wine_id):
     )  # Cookie con duración de 30 días
 
     return response
+
+@login_required
+def ticket(request):
+    # Obtener los vinos desde el carrito
+    cart_items, total_price = get_wines_from_cart(request)
+
+    # Si no hay vinos en el carrito, puedes redirigir a la colección o mostrar un mensaje
+    if not cart_items:
+        messages.warning(request, "Tu carrito está vacío.")
+        return redirect("collection")
+
+    # Pasar los vinos y el precio total al contexto
+    context = {
+        "cart_items": cart_items,
+        "total_price": total_price,
+    }
+    return render(request, "wines/ticket.html", context)
+
+def remove_user_cart_cookie(request):
+    # Obtener el carrito actual desde las cookies (si existe)
+    cart = json.loads(request.COOKIES.get("cart", "{}"))
+    user_id = str(request.user.id)  # Convertir el id del usuario a string para usarlo como clave
+    
+    # Verificar si el usuario tiene un carrito guardado
+    if user_id in cart:
+        # Eliminar el carrito asociado al usuario
+        del cart[user_id]
+        
+        # Actualizar la cookie para reflejar el cambio
+        response = redirect("home")  # Redirigir a la página de inicio o cualquier otra página
+        response.set_cookie("cart", json.dumps(cart), max_age=timedelta(days=30))
+        
+        messages.success(request, "Tu carrito ha sido vaciado.")
+    else:
+        response = redirect("home")
+        messages.warning(request, "No se encontró un carrito asociado a tu cuenta.")
+    
+    return response

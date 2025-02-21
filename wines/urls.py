@@ -17,4 +17,6 @@ urlpatterns = [
     ),
     path("generate_wine/", views.generate_wine, name="generate_wine"),
     path("generate_wine_image/", views.generate_wine_image, name="generate_wine_image"),
+    path("ticket/", views.ticket, name="ticket"),
+    path('eliminar-carrito/', views.remove_user_cart_cookie, name='remove_user_cart_cookie'),
 ]
