@@ -32,16 +32,15 @@
             <div class="form-group">
                 <label for="categoria">Filtrar por Categoría</label>
                 <form method="GET" id="category-form">
-                    <select class="form-control" id="categoria" name="category"
-                        onchange="document.getElementById('category-form').submit();">
-                        <option value="-1" {% if category_filter == None or category_filter == "-1" %} selected{% endif %}>
-                            Todas las Categorías</option>
+                    <select class="form-control"  name="category" onchange="document.getElementById('category-form').submit();">
+                        <option value="" {% if not category_filter %}selected{% endif %}>Todas las categorías</option>
                         {% for category in categories %}
-                        <option value="{{ category.id }}" {% if category.id == category_filter %} selected{% endif %}>
-                            {{category.name }} </option>
+                            <option value="{{ category.id }}" {% if category.id|stringformat:"s" == category_filter %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
                         {% endfor %}
                     </select>
-                </form>
+                </form>  
 
             </div>
 
@@ -149,5 +148,7 @@
         padding: 15px;
     }
 </style>
+
+
 
 {% endblock %}

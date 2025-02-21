@@ -334,6 +334,8 @@ def buy_wines(request):
 
 @login_required
 def collection(request):
+
+
     # Obtener el perfil del usuario
     profile = request.user.profile
 
@@ -344,6 +346,8 @@ def collection(request):
     category_filter = request.GET.get("category", None)
     score_filter = request.GET.get("score", None)
 
+    print(f"Category Filter: {category_filter}")
+
     # Filtrar los vinos del usuario
     if request.user.is_superuser:
         wines = Wine.objects.all()
@@ -351,7 +355,7 @@ def collection(request):
         wines = profile.wines.all()
 
     # Filtrar por categoría si se selecciona una
-    if category_filter:
+    if category_filter not in [None, ""]:
         wines = wines.filter(category_id=category_filter)
 
     # Crear la lista de vinos con sus puntuaciones
@@ -380,11 +384,6 @@ def collection(request):
             "score_filter": score_filter,
         },
     )
-
-
-@login_required
-def cata(request):
-    return render(request, "wines/cata.html")
 
 
 def get_wines_from_cart(request):

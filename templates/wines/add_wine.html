@@ -96,13 +96,19 @@
             <small class="text-muted">Sube una imagen del vino en formato JPG, PNG o GIF.</small> -->
             <div class="mt-3">
                 <div class="mt-3">
-                    <img id="imagePreview" src="#" alt="Vista previa de la imagen" class="img-fluid d-none"
-                        style="max-width: 200px;">
-                    <input type="text" class="form-control" id="image_url_frontend" name="image_url_frontend">
-
+                    <img id="imagePreview" src="#" alt="Vista previa de la imagen" class="img-fluid d-none" style="max-width: 200px;">
+                    
+                    <div class="position-relative">
+                        <input type="text" class="form-control" id="image_url_frontend" name="image_url_frontend">
+                        <div id="loadingSpinner" class="position-absolute top-50 end-0 translate-middle-y me-2 d-none">
+                            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                                <span class="visually-hidden">Generando...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            
                 <button type="button" class="btn btn-info mt-2" onclick="generateAIImage()">🤖 Generar Imagen</button>
-
             </div>
 
 
@@ -168,34 +174,45 @@
 
 
     function generateAIImage() {
+    const name = document.getElementById("name").value;
+    const description = document.getElementById("description").value;
+    const category_id = document.getElementById("category").value;
 
-        const name = document.getElementById("name").value;
-        const description = document.getElementById("description").value;
-        const category_id = document.getElementById("category").value;
+    const imageInput = document.getElementById("image_url_frontend");
+    const spinner = document.getElementById("loadingSpinner");
 
-        const data = {
-            name: name,
-            description: description,
-            category: category_id
-        };
+    const data = {
+        name: name,
+        description: description,
+        category: category_id
+    };
 
-        fetch("{% url 'generate_wine_image' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.image_url) {
-                    document.getElementById("image_url_frontend").value = data.image_url;
-                    document.getElementById("imagePreview").src = data.image_url;
-                    document.getElementById("imagePreview").classList.remove("d-none");
-                }
-            })
-            .catch(error => console.error("Error generando la imagen:", error));
-    }
+    // Mostrar el spinner y limpiar el input
+    spinner.classList.remove("d-none");
+    imageInput.value = "";
+
+    fetch("{% url 'generate_wine_image' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.image_url) {
+            imageInput.value = data.image_url;
+            document.getElementById("imagePreview").src = data.image_url;
+            document.getElementById("imagePreview").classList.remove("d-none");
+        }
+    })
+    .catch(error => console.error("Error generando la imagen:", error))
+    .finally(() => {
+        // Ocultar el spinner tras completar la petición
+        spinner.classList.add("d-none");
+    });
+}
+
 
 
 

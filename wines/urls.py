@@ -8,7 +8,6 @@ urlpatterns = [
     path("delete_wine/<int:wine_id>/", views.delete_wine, name="delete_wine"),
     path("store/", views.store, name="store"),
     path("collection/", views.collection, name="collection"),
-    path("cata/", views.cata, name="cata"),
     path("cart/", views.cart, name="cart"),
     path("add_to_cart/<int:wine_id>/", views.add_to_cart, name="add_to_cart"),
     path(
