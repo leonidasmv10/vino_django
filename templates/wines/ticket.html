@@ -6,11 +6,11 @@
 {% block content %}
 <section class="bg-light py-5">
     <div class="container text-center">
-        <h2 class="mb-4">✅ ¡Gracias por tu compra!</h2>
-        <p>Hola,<strong>{{ username }}</strong>. Hemos recibido tu compra y te mostraremos los detalles de los vinos que has seleccionado:</p>
+        <h2 class="mb-4">✅ ¡Aqui tienes los detalles de tu carrito!</h2>
+        <p>Hola <strong>{{ username }}</strong>. Hemos recibido tu compra y te mostraremos los detalles de los vinos que has seleccionado:</p>
 
         <div class="alert alert-success mt-4 mx-auto" style="max-width: 600px; text-align: center;">
-            <h5>Detalles de la Compra:</h5>
+            <h5>Detalles del carrito:</h5>
             
             <h6>Lista de Vinos:</h6>
             <ul class="list-group">
@@ -24,7 +24,7 @@
 
             <h5 class="mt-4">Precio Total: ${{ total_price }}</h5>
         </div>
-        <a href="{% url 'remove_user_cart_cookie' %}" class="btn btn-success">Volver a la Tienda</a>
+        <a href="{% url 'remove_user_cart_cookie' %}" class="btn btn-success">Confirmar Compra</a>
     </div>
 </section>}
 {% endblock %}
