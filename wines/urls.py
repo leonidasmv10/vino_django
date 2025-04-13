@@ -5,6 +5,7 @@ urlpatterns = [
     path("add_wine/", views.add_wine, name="add_wine"),
     path("buy_wines/", views.buy_wines, name="buy_wines"),
     path("update_wine/<int:wine_id>/", views.update_wine, name="update_wine"),
+    path("chatbot/", views.chatbot, name="chatbot"),
     path("delete_wine/<int:wine_id>/", views.delete_wine, name="delete_wine"),
     path("store/", views.store, name="store"),
     path("collection/", views.collection, name="collection"),

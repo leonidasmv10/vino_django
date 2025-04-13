@@ -41,7 +41,7 @@ responde siempre con una matriz JSON que incluya las siguientes propiedades:
 3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
 4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
 
-Sé altamente creativo en la generación del nombre y la descripción.
+Sé altamente creativo en la generación del nombre (algo asi como el universo) y la descripción.
 """
 
 prompt_premium = f"""
@@ -63,7 +63,7 @@ responde siempre con una matriz JSON que incluya las siguientes propiedades:
 3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
 4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
 
-Sé altamente creativo en la generación del nombre y la descripción.
+Sé altamente creativo en la generación del nombre (algo asi como el universo) y la descripción.
 """
 
 
@@ -86,8 +86,13 @@ responde siempre con una matriz JSON que incluya las siguientes propiedades:
 3. **Los valores sensoriales deben estar dentro de los rangos adecuados al `total_score` para mantener coherencia.**  
 4. **El precio debe reflejar la calidad del vino, siendo más alto para `total_score` elevados.**  
 
-Sé altamente creativo en la generación del nombre y la descripción.
+Sé altamente creativo en la generación del nombre (algo asi como el universo) y la descripción.
 """
+
+negative_prompt = (
+    "low quality, worst quality, blurry, jpeg artifacts, signature, watermark, text, artist name, bad anatomy, "
+    "extra limbs, missing limbs, child, nsfw, cartoon, retro style, pixelated"
+)
 
 # pipe = StableDiffusionXLPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
 pipe = StableDiffusionPipeline.from_pretrained(
@@ -133,13 +138,24 @@ def generate_wine_image(request):
         category_id = data["category"]
         # **Generar la nueva imagen con IA**
         prompt = f"""
-                Wine name: {name}
-                Category: {category.name}
-                Visual elements: A bottle of wine, a glass of the same wine, realistic colors, showcasing the wine's unique characteristics. The bottle should always be included in the scene. 8k resolution, elegant and detailed.
-        """
+Wine name: {name}  
+Category: {category.name}  
+Visual elements: Character {name} holding a wine bottle. The bottle is the main focus with realistic textures and lighting. Colors match the wine type (red for red wine, golden for white wine). Ultra-realistic, 8K resolution.
+"""
 
         print(prompt)
-        image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
+        # image = pipe(prompt, num_inference_steps=50, output_type="pil").images[0]
+        image = pipe(
+            prompt,
+            negative_prompt=negative_prompt,
+            num_inference_steps=60,
+            guidance_scale=8.5,
+            output_type="pil"
+        ).images[0]
+
+        # prompt = "anime dragon ball style, masterpiece, high quality, 1girl, solo, long hair, looking at viewer, blush, smile, bangs, blue eyes, skirt, medium breasts, iridescent, gradient, colorful, besides a cottage, in the country"
+        # negative_prompt = 'simple background, duplicate, retro style, low quality, lowest quality, 1980s, 1990s, 2000s, 2005 2006 2007 2008 2009 2010 2011 2012 2013, bad anatomy, bad proportions, extra digits, lowres, username, artist name, error, duplicate, watermark, signature, text, extra digit, fewer digits, worst quality, jpeg artifacts, blurry'
+        # image = pipe(prompt, negative_prompt=negative_prompt).images[0]
 
         # **Guardar la imagen en el servidor**
         image_name = f"{uuid.uuid4().hex}.png"
@@ -306,6 +322,9 @@ def delete_wine(request, wine_id):
 def store(request):
     return render(request, "wines/store.html")
 
+@login_required
+def chatbot(request):
+    return render(request, "wines/chatbot.html")
 
 @login_required
 def buy_wines(request):
